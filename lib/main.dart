@@ -50,9 +50,6 @@ Future<void> main() async {
     timeDilation = 1.0;
   runApp(Main(preloadedFs: preferences, prefs: prefs));
 
-  Directory directory = await getApplicationDocumentsDirectory();
-  print(directory.path);
-
 }
 
 class Main extends StatefulWidget {
@@ -121,13 +118,10 @@ class _MainState extends State<Main> {
         ThemeData customTheme;
         ThemeData darkTheme;
 
-        darkTheme = config.blackThemeEnabled 
-                    ? AppTheme.black(config.accentColor)
-                    : AppTheme.dark(config.accentColor);
+        darkTheme = AppTheme.dark(config.accentColor);
 
-        customTheme = config.darkThemeEnabled
-                      ? darkTheme
-                      : AppTheme.white(config.accentColor);
+        customTheme = darkTheme;
+
 
         List<Locale> supportedLocales = [];
         supportedLanguages.forEach((element) =>
@@ -160,19 +154,11 @@ class _MainState extends State<Main> {
           },
           navigatorKey: NavigationService.instance.navigationKey,
           title: "iPlay",
-          theme: config.systemThemeEnabled
-                 ? AppTheme.white(config.accentColor)
-                 : customTheme,
-          darkTheme: config.systemThemeEnabled
-                     ? darkTheme
-                     : customTheme,
-          initialRoute: config.preferences.showIntroductionPages()
-            ? 'introScreen'
-            : 'homeScreen',
+          theme: customTheme,
+          darkTheme: darkTheme,
+          initialRoute: 'homeScreen',
           routes: {
             'homeScreen':  (context) => AudioServiceWidget(child: Material(child: Lib())),
-            'introScreen': (context) => IntroScreen(),
-            'reCaptcha': (context) => ReCaptchaPage(),
           },
         );
       }),

@@ -10,6 +10,7 @@ import 'package:songtube/downloadMenu/downloadMenu.dart';
 import 'package:songtube/internal/ffmpeg/converter.dart';
 import 'package:songtube/internal/languages.dart';
 import 'package:songtube/internal/models/videoFile.dart';
+import 'package:songtube/internal/radioStreamingController.dart';
 import 'package:songtube/players/service/playerService.dart';
 import 'package:songtube/players/videoPlayer.dart';
 import 'package:songtube/provider/managerProvider.dart';
@@ -172,6 +173,14 @@ class SongsListView extends StatelessWidget {
                     child: Icon(Icons.more_vert, size: 18),
                   )),
               onTap: () async {
+                try {
+                  var streamingController = StreamingController();
+                  streamingController.stop();
+                } on Exception catch (_) {
+                  print('Trying shut down radio');
+                }
+
+
                 if (hasDownloadType == false ||
                     song.extras["downloadType"] == "Audio") {
                   if (!AudioService.running) {

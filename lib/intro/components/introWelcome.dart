@@ -72,7 +72,7 @@ class IntroWelcome extends StatelessWidget {
                             text: Languages.of(context).labelAppWelcome + "\n"
                           ),
                           TextSpan(
-                            text: "SongTube",
+                            text: "iPlay",
                             style: TextStyle(
                               color: Theme.of(context).accentColor,
                               fontWeight: FontWeight.w600

@@ -24,11 +24,11 @@ class ConfigurationProvider extends ChangeNotifier {
     loadSavedData();
     if (_audioDownloadPath == null)
       ExtStorage.getExternalStorageDirectory().then((value) {
-        _audioDownloadPath = value + "/SongTube";
+        _audioDownloadPath = value + "/iPlay";
       });
     if (_videoDownloadPath == null)
       ExtStorage.getExternalStorageDirectory().then((value) {
-        _videoDownloadPath = value + "/SongTube";
+        _videoDownloadPath = value + "/iPlay";
       });
     PackageInfo.fromPlatform().then((value) {
       appName = value.appName;
@@ -52,7 +52,7 @@ class ConfigurationProvider extends ChangeNotifier {
   Color _accentColor;
   bool _systemThemeAvailable = false;
   bool _systemThemeEnabled = false;
-  bool _darkThemeEnabled = false;
+  bool _darkThemeEnabled = true;
   bool _blackThemeEnabled = false;
   bool _enableFFmpegActionType = true;
   bool _enableVideoConvertion = false;  

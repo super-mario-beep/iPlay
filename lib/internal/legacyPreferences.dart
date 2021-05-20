@@ -137,7 +137,7 @@ class LegacyPreferences {
   }
 
   bool showIntroductionPages() {
-    return prefs.getBool(showIntroduction) ?? true;
+    return false;
   }
 
   void saveShowIntroductionPages(bool value) {

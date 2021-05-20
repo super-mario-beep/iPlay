@@ -116,7 +116,7 @@ class _IntroPermissionsState extends State<IntroPermissions> {
                         ),
                         children: [
                           TextSpan(
-                            text: "SongTube ",
+                            text: "iPlay ",
                             style: TextStyle(
                               color: Theme.of(context).accentColor,
                               fontWeight: FontWeight.w600

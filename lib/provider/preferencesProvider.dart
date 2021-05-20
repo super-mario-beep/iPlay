@@ -109,7 +109,7 @@ class PreferencesProvider extends ChangeNotifier {
 
   // Join Telegram Dialog
   bool get showJoinTelegramDialog {
-    return prefs.getBool('joinTelegramDialog') ?? true;
+    return false;
   }
   set showJoinTelegramDialog(bool value) {
     prefs.setBool('joinTelegramDialog', value);
