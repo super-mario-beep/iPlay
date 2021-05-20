@@ -20,7 +20,6 @@ class _MusicScreenAlbumsTabState extends State<ListPlaylists> {
   Widget build(BuildContext context) {
     PreferencesProvider prefs = Provider.of<PreferencesProvider>(context);
     List<String> playlists = prefs.audioPlaylists;
-    print(playlists.length);
     if (playlists.length == 0) {
       return PlaylistEmptyWidget();
     } else {

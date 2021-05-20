@@ -1,4 +1,5 @@
 // Flutter
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 
 // Internal
@@ -27,6 +28,22 @@ class _DownloadsTabState extends State<DownloadsTab> {
   @override
   Widget build(BuildContext context) {
     MediaProvider mediaProvider = Provider.of<MediaProvider>(context);
+    List<MediaItem> list = mediaProvider.databaseSongs;
+    List<MediaItem> _list = [];
+
+    for(MediaItem item in list){
+      if(_list.where((element) => element.title == item.title).isEmpty){
+        _list.add(item);
+      }
+    }
+
+    if(_list.length != list.length){
+      print("Fixing download song list");
+      mediaProvider.databaseSongs.clear();
+      mediaProvider.databaseSongs.addAll(_list.reversed);
+    }
+
+
     return MediaListBase(
       isLoading: mediaProvider.loadingDownloads,
       isEmpty: mediaProvider.databaseSongs.isEmpty,

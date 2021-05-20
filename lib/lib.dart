@@ -307,7 +307,7 @@ class _LibState extends State<Lib> {
       if (screenIndex == 0) {
         return HomeScreen();
       } else if (screenIndex == 1) {
-        return MusicScreen();
+        return SubscriptionsScreen();
       } else if (screenIndex == 2) {
         return DownloadTab();
       } else if (screenIndex == 3) {

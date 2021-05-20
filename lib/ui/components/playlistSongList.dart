@@ -6,34 +6,28 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:songtube/downloadMenu/downloadMenu.dart';
 import 'package:songtube/internal/ffmpeg/converter.dart';
 import 'package:songtube/internal/languages.dart';
 import 'package:songtube/internal/models/videoFile.dart';
 import 'package:songtube/players/service/playerService.dart';
 import 'package:songtube/players/videoPlayer.dart';
-import 'package:songtube/provider/managerProvider.dart';
 import 'package:songtube/provider/mediaProvider.dart';
 import 'package:songtube/provider/preferencesProvider.dart';
 import 'package:songtube/ui/animations/blurPageRoute.dart';
-import 'package:songtube/ui/components/addToPlaylist.dart';
-import 'package:songtube/ui/components/addToPlaylistDownloaded.dart';
 import 'package:songtube/ui/internal/popupMenu.dart';
 import 'package:songtube/ui/components/tagsEditorPage.dart';
 import 'package:songtube/ui/internal/snackbar.dart';
 import 'package:transparent_image/transparent_image.dart';
 
-import '../../../lib.dart';
-
-class SongsListView extends StatelessWidget {
+class PlaylistSongList extends StatelessWidget {
   final List<MediaItem> songs;
   final bool hasDownloadType;
   final String searchQuery;
-
-  SongsListView({@required this.songs,
+  PlaylistSongList({
+    @required this.songs,
     this.hasDownloadType = false,
-    this.searchQuery = ""});
-
+    this.searchQuery = ""
+  });
   @override
   Widget build(BuildContext context) {
     MediaProvider mediaProvider = Provider.of<MediaProvider>(context);
@@ -42,7 +36,7 @@ class SongsListView extends StatelessWidget {
       itemCount: songs.length,
       itemBuilder: (context, index) {
         MediaItem song = songs[index];
-        if (searchQuery == "") {
+        if (searchQuery == "" || getSearchQueryMatch(song)) {
           return ListTile(
               title: Text(
                 song.title,
@@ -50,11 +44,7 @@ class SongsListView extends StatelessWidget {
                 overflow: TextOverflow.fade,
                 softWrap: false,
                 style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyText1
-                      .color,
+                  color: Theme.of(context).textTheme.bodyText1.color,
                 ),
               ),
               subtitle: Text(
@@ -64,12 +54,8 @@ class SongsListView extends StatelessWidget {
                 softWrap: false,
                 style: TextStyle(
                     fontSize: 12,
-                    color: Theme
-                        .of(context)
-                        .textTheme
-                        .bodyText1
-                        .color
-                        .withOpacity(0.6)),
+                    color: Theme.of(context).textTheme.bodyText1.color.withOpacity(0.6)
+                ),
               ),
               leading: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -81,15 +67,13 @@ class SongsListView extends StatelessWidget {
                       margin: EdgeInsets.only(right: 16),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: Colors.black12.withOpacity(0.04)),
+                          color: Colors.black12.withOpacity(0.04)
+                      ),
                       child: Icon(
                         song.extras["downloadType"] == "Audio"
                             ? EvaIcons.musicOutline
                             : EvaIcons.videoOutline,
-                        color: Theme
-                            .of(context)
-                            .iconTheme
-                            .color,
+                        color: Theme.of(context).iconTheme.color,
                         size: 20,
                       ),
                     ),
@@ -108,7 +92,8 @@ class SongsListView extends StatelessWidget {
                             placeholder: MemoryImage(kTransparentImage),
                             image: FileImage(File(song.extras["artwork"])),
                             fit: BoxFit.cover,
-                          )),
+                          )
+                      ),
                     ),
                   ),
                 ],
@@ -117,48 +102,48 @@ class SongsListView extends StatelessWidget {
                   borderRadius: 10,
                   items: [
                     FlexiblePopupItem(
-                        title: "Delete song",
-                        value: "Delete"),
+                        title: Languages.of(context).labelEditTags,
+                        value: "Edit Tags"
+                    ),
                     FlexiblePopupItem(
-                        title: "Add to playlist", value: "Add to playlist")
+                        title: Languages.of(context).labelDeleteSong,
+                        value: "Delete"
+                    )
                   ],
                   onItemTap: (String value) async {
                     if (value != null) {
+                      if (AudioService.running && AudioService.playbackState.playing) {
+                        if (AudioService.currentMediaItem.id == song.id) {
+                          AudioService.stop();
+                        }
+                      }
                       switch (value) {
-                        case "Add to playlist":
-                          showModalBottomSheet(
-                              context: context,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(15),
-                                      topRight: Radius.circular(15)
-                                  )
-                              ),
-                              builder: (context) {
-                                return AddStreamToPlaylistSheetDl(stream: song.title);
-                              }
-                          );
-
-                          break;
                         case "Delete":
-                          if (AudioService.running && AudioService.playbackState.playing) {
-                            if (AudioService.currentMediaItem.id == song.id) {
-                              AudioService.stop();
-                            }
-                          }
                           mediaProvider.deleteSong(song);
-                          PreferencesProvider prefs = Provider.of<PreferencesProvider>(context, listen: false);
-                          List<String> playlists = prefs.audioPlaylists;
-                          for(String playlist in playlists){
-                            List<String> songs = prefs.getSongsForPlaylist(playlist);
-                            for(String s in songs){
-                              if(song.title == s){
-                                songs.remove(s);
-                                prefs.setSongsForPlaylist(playlist, songs);
-                                break;
-                              }
+                          break;
+                        case "Edit Tags":
+                          FFmpegConverter().getMediaFormat(song.id). then((format) {
+                            if (format == "m4a") {
+                              Navigator.of(context).push(
+                                  BlurPageRoute(
+                                    builder: (_) {
+                                      return TagsEditorPage(
+                                        song: song,
+                                      );
+                                    },
+                                    blurStrength: Provider.of<PreferencesProvider>
+                                      (context, listen: false).enableBlurUI ? 20 : 0,
+                                  )
+                              );
+                            } else {
+                              AppSnack.showSnackBar(
+                                icon: EvaIcons.alertCircleOutline,
+                                title: "Cannot Edit Tags",
+                                message: "Audio format not supported ($format)",
+                                context: context,
+                              );
                             }
-                          }
+                          });
                           break;
                         case "Apply Filters":
                         // TODO: Allow Audio Filters application
@@ -170,10 +155,10 @@ class SongsListView extends StatelessWidget {
                     color: Colors.transparent,
                     padding: EdgeInsets.all(4),
                     child: Icon(Icons.more_vert, size: 18),
-                  )),
+                  )
+              ),
               onTap: () async {
-                if (hasDownloadType == false ||
-                    song.extras["downloadType"] == "Audio") {
+                if (hasDownloadType == false || song.extras["downloadType"] == "Audio") {
                   if (!AudioService.running) {
                     await AudioService.start(
                       backgroundTaskEntrypoint: songtubePlayer,
@@ -192,19 +177,34 @@ class SongsListView extends StatelessWidget {
                 } else {
                   Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              AppVideoPlayer(VideoFile(
-                                name: song.title,
-                                path: song.id,
-                              ))));
+                      MaterialPageRoute(builder: (context) =>
+                          AppVideoPlayer(VideoFile(
+                            name: song.title,
+                            path: song.id,
+                          )))
+                  );
                 }
-              });
+              }
+          );
         } else {
           return Container();
         }
       },
     );
+  }
+
+  bool getSearchQueryMatch(MediaItem song) {
+    if (searchQuery != "") {
+      if (song.title.toLowerCase().contains(searchQuery.toLowerCase())) {
+        return true;
+      } else if (song.artist.toLowerCase().contains(searchQuery.toLowerCase())) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return true;
+    }
   }
 
 }

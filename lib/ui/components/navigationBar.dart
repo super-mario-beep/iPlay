@@ -58,8 +58,8 @@ class AppBottomNavigationBar extends StatelessWidget {
           ),
           if (enableYoutubeMusicScreen)
           BottomNavigationBarItem(
-            icon: Icon(EvaIcons.musicOutline),
-            label: Languages.of(context).labelMusic
+            icon: Icon(Icons.radio),
+            label: "Radio"
           ),
           BottomNavigationBarItem(
             icon: Icon(EvaIcons.cloudDownloadOutline),

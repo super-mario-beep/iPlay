@@ -159,7 +159,7 @@ class _MainState extends State<Main> {
             );
           },
           navigatorKey: NavigationService.instance.navigationKey,
-          title: "SongTube",
+          title: "iPlay",
           theme: config.systemThemeEnabled
                  ? AppTheme.white(config.accentColor)
                  : customTheme,

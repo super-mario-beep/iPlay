@@ -98,6 +98,10 @@ class _AddStreamToPlaylistSheetStateDl extends State<AddStreamToPlaylistSheetDl>
                       }
                   );
                   if (name != null) {
+                    if(prefs.audioPlaylists.contains(name)){
+                      print("Playlist " + name + " already exist");
+                      return;
+                    }
                     print("New playlist created: " + name);;
                     List<String> list = prefs.audioPlaylists;
                     list.add(name);

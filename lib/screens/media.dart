@@ -19,6 +19,9 @@ import 'package:songtube/ui/components/searchBar.dart';
 // UI
 import 'package:songtube/ui/components/fancyScaffold.dart';
 
+import 'homeScreen/pages/favorites.dart';
+import 'homeScreen/pages/watchLater.dart';
+
 class MediaScreen extends StatefulWidget {
   @override
   _MediaScreenState createState() => _MediaScreenState();
@@ -132,7 +135,7 @@ class _MediaScreenState extends State<MediaScreen> {
               child: TabBarView(
                 children: [
                   ListPlaylists(),
-                  MediaVideoTab(searchQuery)
+                  HomePageFavorites()
                   //MediaMusicTab(),
                 ],
               ),

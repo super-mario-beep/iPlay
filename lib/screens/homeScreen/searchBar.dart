@@ -201,7 +201,7 @@ class _HomePageAppBarState extends State<HomePageAppBar> with TickerProviderStat
               child: IgnorePointer(
                 ignoring: true,
                 child: Text(
-                  "SongTube",
+                  "iPlay",
                     style: TextStyle(
                     color: Theme.of(context).textTheme.bodyText1.color.withOpacity(0.6),
                     fontFamily: 'Product Sans',
