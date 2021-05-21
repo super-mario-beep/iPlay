@@ -248,6 +248,7 @@ class _YoutubePlayerVideoPageState extends State<YoutubePlayerVideoPage> with Ti
                   VideoDetails(
                     infoItem: pageProvider.infoItem,
                     uploaderAvatarUrl: pageProvider.currentChannel?.avatarUrl ?? null,
+                    views: pageProvider.currentVideo?.viewCount ?? 0
                   ),
                   // ---------------------------------------
                   // Likes, dislikes, Views and Share button
@@ -402,6 +403,7 @@ class _YoutubePlayerVideoPageState extends State<YoutubePlayerVideoPage> with Ti
                   VideoDetails(
                     infoItem: pageProvider.infoItem,
                     uploaderAvatarUrl: pageProvider.currentChannel?.avatarUrl ?? null,
+                    views: pageProvider.currentVideo?.viewCount ?? 0,
                   ),
                   // ---------------------------------------
                   // Likes, dislikes, Views and Share button
@@ -499,7 +501,7 @@ class _YoutubePlayerVideoPageState extends State<YoutubePlayerVideoPage> with Ti
     VideoPageProvider pageProvider = Provider.of<VideoPageProvider>(context);
     return OrientationBuilder(
       builder: (context, orientation) {
-        if (orientation == Orientation.portrait && Lib.DOWNLOADING_ENABLED) {
+        if (orientation == Orientation.portrait && Lib.DOWNLOADING_ENABLED && false) {
           return VideoDownloadFab(
             readyToDownload: pageProvider.currentVideo == null ? false : true,
             onDownload: () {
@@ -552,6 +554,7 @@ class _YoutubePlayerVideoPageState extends State<YoutubePlayerVideoPage> with Ti
               children: [
                 SizedBox(height: 8),
                 VideoEngagement(
+                  video: pageProvider.currentVideo,
                   likeCount: pageProvider.currentVideo.likeCount,
                   dislikeCount: pageProvider.currentVideo.dislikeCount,
                   viewCount: pageProvider.currentVideo.viewCount,

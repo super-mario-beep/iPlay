@@ -1,6 +1,7 @@
 import 'dart:isolate';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:newpipeextractor_dart/extractors/channels.dart';
 import 'package:newpipeextractor_dart/utils/url.dart';
 import 'package:provider/provider.dart';
@@ -13,9 +14,11 @@ import 'package:transparent_image/transparent_image.dart';
 class VideoDetails extends StatelessWidget {
   final dynamic infoItem;
   final String uploaderAvatarUrl;
+  final int views;
   VideoDetails({
     @required this.infoItem,
     this.uploaderAvatarUrl,
+    @required this.views,
   });
   @override
   Widget build(BuildContext context) {
@@ -93,7 +96,7 @@ class VideoDetails extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(right: 16, bottom: 8),
                       child: Text(
-                        author,
+                        author + " • " + NumberFormat.compact().format(views) + " views",
                         style: TextStyle(
                           color: Theme.of(context).textTheme.bodyText1.color
                             .withOpacity(0.8),

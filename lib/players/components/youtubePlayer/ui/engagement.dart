@@ -2,7 +2,11 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:newpipeextractor_dart/models/video.dart';
+import 'package:provider/provider.dart';
+import 'package:songtube/downloadMenu/downloadMenu.dart';
 import 'package:songtube/internal/languages.dart';
+import 'package:songtube/provider/managerProvider.dart';
 
 class VideoEngagement extends StatelessWidget {
   final int likeCount;
@@ -10,13 +14,17 @@ class VideoEngagement extends StatelessWidget {
   final int viewCount;
   final Function onOpenComments;
   final Function onSaveToPlaylist;
+  final YoutubeVideo video;
+
   VideoEngagement({
     @required this.likeCount,
     @required this.dislikeCount,
     @required this.viewCount,
     @required this.onOpenComments,
-    @required this.onSaveToPlaylist
+    @required this.onSaveToPlaylist,
+    @required this.video,
   });
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -25,70 +33,86 @@ class VideoEngagement extends StatelessWidget {
       children: <Widget>[
         // Likes Counter
         _engagementTile(
-          icon: Icon(MdiIcons.thumbUpOutline, color: Theme.of(context).iconTheme.color),
+          icon: Icon(MdiIcons.thumbUpOutline,
+              color: Theme.of(context).iconTheme.color),
           text: Text(
             NumberFormat.compact().format(likeCount),
-            style: TextStyle(
-              fontFamily: "Varela",
-              fontSize: 10
-            ),
-            ),
+            style: TextStyle(fontFamily: "Varela", fontSize: 10),
+          ),
         ),
         // Dislikes Counter
         _engagementTile(
-          icon: Icon(MdiIcons.thumbDownOutline, color: Theme.of(context).iconTheme.color),
+          icon: Icon(MdiIcons.thumbDownOutline,
+              color: Theme.of(context).iconTheme.color),
           text: Text(
             NumberFormat.compact().format(dislikeCount),
-            style: TextStyle(
-              fontFamily: "Varela",
-              fontSize: 10
-            ),
-            ),
-        ),
-        //
-        _engagementTile(
-          icon: Icon(EvaIcons.eyeOutline, color: Theme.of(context).iconTheme.color),
-          text: Text(
-            NumberFormat.compact().format(viewCount),
-            style: TextStyle(
-              fontFamily: "Varela",
-              fontSize: 10
-            ),
+            style: TextStyle(fontFamily: "Varela", fontSize: 10),
           ),
-        ),
-        // Add to Playlist Button
-        _engagementTile(
-          icon: Icon(MdiIcons.playlistPlus, color: Theme.of(context).iconTheme.color),
-          text: Text(
-            Languages.of(context).labelPlaylist,
-            style: TextStyle(
-              fontFamily: "Varela",
-              fontSize: 10
-            ),
-          ),
-          onPressed: onSaveToPlaylist
         ),
         // Open Comments Button
         _engagementTile(
-          icon: Icon(MdiIcons.messageTextOutline, color: Theme.of(context).iconTheme.color),
-          text: Text(
-            "Comments",
-            style: TextStyle(
-              fontFamily: "Varela",
-              fontSize: 10
+            icon: Icon(MdiIcons.messageTextOutline,
+                color: Theme.of(context).iconTheme.color),
+            text: Text(
+              "Comments",
+              style: TextStyle(fontFamily: "Varela", fontSize: 10),
             ),
+            onPressed: onOpenComments),
+
+        // Add to Playlist Button
+        _engagementTile(
+            icon: Icon(MdiIcons.playlistPlus,
+                color: Theme.of(context).iconTheme.color),
+            text: Text(
+              Languages.of(context).labelPlaylist,
+              style: TextStyle(fontFamily: "Varela", fontSize: 10),
+            ),
+            onPressed: onSaveToPlaylist),
+        //Download
+        Container(
+          child: GestureDetector(
+            child: _engagementTile(
+              icon: Icon(EvaIcons.cloudDownloadOutline,
+                  color: Theme.of(context).iconTheme.color),
+              text: Text(
+                "Download",
+                style: TextStyle(fontFamily: "Varela", fontSize: 10),
+              ),
+            ),
+            onTap: () {
+              showModalBottomSheet<dynamic>(
+                  isScrollControlled: true,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30)),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  context: context,
+                  builder: (context) {
+                    String url = video.url;
+                    return Wrap(
+                      children: [
+                        Consumer<ManagerProvider>(
+                            builder: (context, provider, _) {
+                          return DownloadMenu(
+                            videoUrl: url,
+                            scaffoldState:
+                                provider.internalScaffoldKey.currentState,
+                          );
+                        }),
+                      ],
+                    );
+                  });
+            },
           ),
-          onPressed: onOpenComments
         ),
       ],
     );
   }
 
-  Widget _engagementTile({
-    final Widget icon,
-    final Widget text,
-    final Function onPressed
-  }) {
+  Widget _engagementTile(
+      {final Widget icon, final Widget text, final Function onPressed}) {
     return Container(
       width: 65,
       height: 65,
@@ -98,14 +122,9 @@ class VideoEngagement extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            icon,
-            SizedBox(height: 2),
-            text
-          ],
+          children: <Widget>[icon, SizedBox(height: 2), text],
         ),
       ),
     );
   }
-
 }

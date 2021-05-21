@@ -506,7 +506,7 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu>
                     margin: EdgeInsets.only(right: 16),
                     child: Row(
                       children: [
-                        Icon(Icons.download_rounded,
+                        Icon(EvaIcons.cloudDownloadOutline,
                             color: Theme.of(context).accentColor, size: 26),
                         SizedBox(width: 8),
                         Text(
