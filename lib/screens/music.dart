@@ -29,23 +29,32 @@ class SubscriptionsScreen extends StatefulWidget {
 class RadioStationCountry {
   String name;
   int radios;
+  static List<RadioStationCountry> countryNames = [];
 
   RadioStationCountry(this.name, this.radios);
 }
 
 class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
   setCountries(BuildContext context) async {
-    final response =
-    await http.get('https://de1.api.radio-browser.info/json/countries');
-    var json = jsonDecode(response.body);
-    List<RadioStationCountry> val = [];
-    for (LinkedHashMap<String, dynamic> obj in json) {
-      val.add(new RadioStationCountry(obj["name"], obj["stationcount"]));
+    if(RadioStationCountry.countryNames.isNotEmpty){
+      setState(() {
+        loading = false;
+        countries = RadioStationCountry.countryNames;
+      });
+    }else {
+      final response =
+      await http.get('https://de1.api.radio-browser.info/json/countries');
+      var json = jsonDecode(response.body);
+      List<RadioStationCountry> val = [];
+      for (LinkedHashMap<String, dynamic> obj in json) {
+        val.add(new RadioStationCountry(obj["name"], obj["stationcount"]));
+      }
+      setState(() {
+        RadioStationCountry.countryNames = val;
+        loading = false;
+        countries = val;
+      });
     }
-    setState(() {
-      loading = false;
-      countries = val;
-    });
   }
 
   List<RadioStationCountry> countries = [];
@@ -56,7 +65,6 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
     ManagerProvider manager = Provider.of<ManagerProvider>(context);
     PreferencesProvider prefs = Provider.of<PreferencesProvider>(context);
     if (countries.isEmpty && loading) setCountries(context);
-
     return AutoHideScaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).cardColor,

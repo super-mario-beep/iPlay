@@ -31,9 +31,10 @@ class SongsListView extends StatelessWidget {
   final bool hasDownloadType;
   final String searchQuery;
 
-  SongsListView({@required this.songs,
-    this.hasDownloadType = false,
-    this.searchQuery = ""});
+  SongsListView(
+      {@required this.songs,
+      this.hasDownloadType = false,
+      this.searchQuery = ""});
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +52,7 @@ class SongsListView extends StatelessWidget {
                 overflow: TextOverflow.fade,
                 softWrap: false,
                 style: TextStyle(
-                  color: Theme
-                      .of(context)
-                      .textTheme
-                      .bodyText1
-                      .color,
+                  color: Theme.of(context).textTheme.bodyText1.color,
                 ),
               ),
               subtitle: Text(
@@ -65,8 +62,7 @@ class SongsListView extends StatelessWidget {
                 softWrap: false,
                 style: TextStyle(
                     fontSize: 12,
-                    color: Theme
-                        .of(context)
+                    color: Theme.of(context)
                         .textTheme
                         .bodyText1
                         .color
@@ -87,10 +83,7 @@ class SongsListView extends StatelessWidget {
                         song.extras["downloadType"] == "Audio"
                             ? EvaIcons.musicOutline
                             : EvaIcons.videoOutline,
-                        color: Theme
-                            .of(context)
-                            .iconTheme
-                            .color,
+                        color: Theme.of(context).iconTheme.color,
                         size: 20,
                       ),
                     ),
@@ -117,9 +110,7 @@ class SongsListView extends StatelessWidget {
               trailing: FlexiblePopupMenu(
                   borderRadius: 10,
                   items: [
-                    FlexiblePopupItem(
-                        title: "Delete song",
-                        value: "Delete"),
+                    FlexiblePopupItem(title: "Delete song", value: "Delete"),
                     FlexiblePopupItem(
                         title: "Add to playlist", value: "Add to playlist")
                   ],
@@ -132,28 +123,30 @@ class SongsListView extends StatelessWidget {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(15),
-                                      topRight: Radius.circular(15)
-                                  )
-                              ),
+                                      topRight: Radius.circular(15))),
                               builder: (context) {
-                                return AddStreamToPlaylistSheetDl(stream: song.title);
-                              }
-                          );
+                                return AddStreamToPlaylistSheetDl(
+                                    stream: song.title);
+                              });
 
                           break;
                         case "Delete":
-                          if (AudioService.running && AudioService.playbackState.playing) {
+                          if (AudioService.running &&
+                              AudioService.playbackState.playing) {
                             if (AudioService.currentMediaItem.id == song.id) {
                               AudioService.stop();
                             }
                           }
                           mediaProvider.deleteSong(song);
-                          PreferencesProvider prefs = Provider.of<PreferencesProvider>(context, listen: false);
+                          PreferencesProvider prefs =
+                              Provider.of<PreferencesProvider>(context,
+                                  listen: false);
                           List<String> playlists = prefs.audioPlaylists;
-                          for(String playlist in playlists){
-                            List<String> songs = prefs.getSongsForPlaylist(playlist);
-                            for(String s in songs){
-                              if(song.title == s){
+                          for (String playlist in playlists) {
+                            List<String> songs =
+                                prefs.getSongsForPlaylist(playlist);
+                            for (String s in songs) {
+                              if (song.title == s) {
                                 songs.remove(s);
                                 prefs.setSongsForPlaylist(playlist, songs);
                                 break;
@@ -162,7 +155,7 @@ class SongsListView extends StatelessWidget {
                           }
                           break;
                         case "Apply Filters":
-                        // TODO: Allow Audio Filters application
+                          // TODO: Allow Audio Filters application
                           break;
                       }
                     }
@@ -174,12 +167,15 @@ class SongsListView extends StatelessWidget {
                   )),
               onTap: () async {
                 try {
-                  var streamingController = StreamingController();
-                  streamingController.stop();
+                  print("Playing music while radio is on: " + StreamingController.IS_PLAYING.toString());
+                  if (StreamingController.IS_PLAYING) {
+                    var streamingController = StreamingController();
+                    StreamingController.IS_PLAYING = false;
+                    streamingController.stop();
+                  }
                 } on Exception catch (_) {
                   print('Trying shut down radio');
                 }
-
 
                 if (hasDownloadType == false ||
                     song.extras["downloadType"] == "Audio") {
@@ -202,8 +198,7 @@ class SongsListView extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              AppVideoPlayer(VideoFile(
+                          builder: (context) => AppVideoPlayer(VideoFile(
                                 name: song.title,
                                 path: song.id,
                               ))));
@@ -215,5 +210,4 @@ class SongsListView extends StatelessWidget {
       },
     );
   }
-
 }

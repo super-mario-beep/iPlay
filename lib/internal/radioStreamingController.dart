@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 class StreamingController {
   MethodChannel _channel;
   var streamingController = StreamController<String>();
+  // ignore: non_constant_identifier_names
+  static bool IS_PLAYING = false;
 
   StreamingController() {
     _channel = const MethodChannel('streaming_channel');
@@ -30,6 +32,8 @@ class StreamingController {
 
   Future<void> config(
       {String url, String title, String desc}) async {
+    print(url);
+    print(title);
     try {
       String result = await _channel.invokeMethod('config', <String, dynamic>{
         'url': url,
@@ -59,7 +63,6 @@ class StreamingController {
 
   Future<void> pause() async {
     try {
-      print("paused");
       String result = await _channel.invokeMethod('pause', <String, dynamic>{});
       return result;
     } catch (err) {
