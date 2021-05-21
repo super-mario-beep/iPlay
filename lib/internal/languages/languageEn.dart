@@ -58,7 +58,7 @@ class LanguageEn extends Languages {
   @override
   String get labelFavorites => "Favorites";
   @override
-  String get labelWatchLater => "Watch Later";
+  String get labelWatchLater => "Playlist";
 
   // Video Options Menu
   @override

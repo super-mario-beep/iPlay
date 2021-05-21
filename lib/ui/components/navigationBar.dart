@@ -2,6 +2,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:songtube/internal/languages.dart';
+import 'package:songtube/lib.dart';
 
 class AppBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -63,7 +64,7 @@ class AppBottomNavigationBar extends StatelessWidget {
           ),
           BottomNavigationBarItem(
             icon: Icon(EvaIcons.cloudDownloadOutline),
-            label: Languages.of(context).labelDownloads
+            label: "Downloads"
           ),
           BottomNavigationBarItem(
             icon: Icon(EvaIcons.headphonesOutline),

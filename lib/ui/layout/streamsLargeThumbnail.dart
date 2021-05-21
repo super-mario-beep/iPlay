@@ -15,6 +15,7 @@ import 'package:share/share.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:songtube/downloadMenu/downloadMenu.dart';
 import 'package:songtube/internal/languages.dart';
+import 'package:songtube/lib.dart';
 import 'package:songtube/pages/channel.dart';
 import 'package:songtube/provider/managerProvider.dart';
 import 'package:songtube/provider/mediaProvider.dart';
@@ -481,7 +482,7 @@ class StreamsLargeThumbnailView extends StatelessWidget {
           title: Languages.of(context).labelCopyLink,
           value: "CopyLink"
         ),
-        if (infoItem is StreamInfoItem)
+        if (infoItem is StreamInfoItem && Lib.DOWNLOADING_ENABLED)
         FlexiblePopupItem(
           title: Languages.of(context).labelDownload,
           value: "Download"

@@ -88,23 +88,7 @@ class AppUpdateSheet extends StatelessWidget {
               InkWell(
                 onTap: () {
                   Navigator.pop(context);
-                  showModalBottomSheet(
-                      isDismissible: false,
-                      enableDrag: false,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20),
-                              topRight: Radius.circular(20))),
-                      context: context,
-                      builder: (context) {
-                        return Wrap(
-                          children: [
-                            AppUpdateDownloadSheet(
-                                newVersion: "new version",
-                                downloadUrl: "details.downloadUrl"),
-                          ],
-                        );
-                      });
+                  launch("https://play.google.com/store/apps/details?id=com.neoblast.android.iplay");
                 },
                 child: Ink(
                   height: 50,
@@ -123,8 +107,8 @@ class AppUpdateSheet extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               GestureDetector(
-                                onTap: () => launch(
-                                    "https://instagram.com/neoblastofficial"),
+                                onTap: () =>
+                                  launch("https://play.google.com/store/apps/details?id=com.neoblast.android.iplay"),
                                 child: Text(
                                   "   " +
                                       Languages.of(context).labelDownload +

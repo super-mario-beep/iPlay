@@ -99,7 +99,7 @@ class DownloadMenuHome extends StatelessWidget {
                     ),
                   ),
                   // Video
-                  Flexible(
+                  /*Flexible(
                     fit: FlexFit.tight,
                     child: GestureDetector(
                       onTap: onVideoTap,
@@ -179,7 +179,7 @@ class DownloadMenuHome extends StatelessWidget {
                         ),
                       ),
                     ),
-                  )
+                  )*/
                 ],
               ),
             ],

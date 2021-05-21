@@ -13,7 +13,7 @@ class SocialLinksRow extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               GestureDetector(
-                  onTap: () => launch("https://play.google.com/store/apps/details?id=com.neoblast.iplay"),
+                  onTap: () => launch("https://play.google.com/store/apps/details?id=com.neoblast.android.iplay"),
                   child: Image.asset('assets/images/playstore.png')),
               GestureDetector(
                   onTap: () => launch("https://instagram.com/neoblastofficial"),
@@ -32,7 +32,7 @@ class SocialLinksRow extends StatelessWidget {
             children: [
               Expanded(
                 child: GestureDetector(
-                  onTap: () => launch("https://play.google.com/store/apps/details?id=com.neoblast.iplay"),
+                  onTap: () => launch("https://play.google.com/store/apps/details?id=com.neoblast.android.iplay"),
                   child: Text(
                     "Google Play",
                     textAlign: TextAlign.center,

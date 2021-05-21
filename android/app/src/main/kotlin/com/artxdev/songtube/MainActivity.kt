@@ -1,4 +1,4 @@
-package com.neoblast.iplay
+package com.neoblast.android.iplay
 
 import android.content.Intent
 import android.graphics.Bitmap

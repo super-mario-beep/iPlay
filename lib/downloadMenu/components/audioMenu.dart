@@ -18,18 +18,20 @@ class AudioDownloadMenu extends StatefulWidget {
   final TagsControllers tags;
   final Function(DownloadItem) onDownload;
   final Function onBack;
+
   AudioDownloadMenu({
     @required this.video,
     @required this.onDownload,
     @required this.onBack,
     @required this.tags,
   });
+
   @override
   _AudioDownloadMenuState createState() => _AudioDownloadMenuState();
 }
 
-class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProviderStateMixin {
-
+class _AudioDownloadMenuState extends State<AudioDownloadMenu>
+    with TickerProviderStateMixin {
   // Variables
   double volumeModifier = 1;
   int bassGain = 0;
@@ -39,18 +41,14 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
   void _onDownload(AudioOnlyStream streamInfo) {
     List<dynamic> list = [
       "Audio",
-      streamInfo, 
+      streamInfo,
       volumeModifier.toString(),
       bassGain.toString(),
       trebleGain.toString(),
       normalizeAudio
     ];
-    DownloadItem item = DownloadItem.fetchData(
-      widget.video,
-      list, 
-      widget.tags,
-      Provider.of<ConfigurationProvider>(context, listen: false)
-    );
+    DownloadItem item = DownloadItem.fetchData(widget.video, list, widget.tags,
+        Provider.of<ConfigurationProvider>(context, listen: false));
     widget.onDownload(item);
   }
 
@@ -58,9 +56,9 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
     if (value == 1) {
       return "Default";
     } else if (value < 1) {
-      return "-" + ((1-value)*100).toStringAsFixed(2) + "%";
+      return "-" + ((1 - value) * 100).toStringAsFixed(2) + "%";
     } else if (value > 1) {
-      return "+" + (value*100).toStringAsFixed(2) + "%";
+      return "+" + (value * 100).toStringAsFixed(2) + "%";
     } else {
       return "Not Supported";
     }
@@ -68,6 +66,7 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
 
   @override
   Widget build(BuildContext context) {
+
     ConfigurationProvider config = Provider.of<ConfigurationProvider>(context);
     return SingleChildScrollView(
       child: Column(
@@ -75,22 +74,15 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
         children: <Widget>[
           // Menu Title
           Container(
-            margin: EdgeInsets.only(
-              top: 8,
-              left: 8,
-              right: 8
-            ),
+            margin: EdgeInsets.only(top: 8, left: 8, right: 8),
             child: Row(
               children: [
                 IconButton(
-                  icon: Icon(EvaIcons.arrowBackOutline),
-                  onPressed: widget.onBack
-                ),
+                    icon: Icon(EvaIcons.arrowBackOutline),
+                    onPressed: widget.onBack),
                 SizedBox(width: 4),
-                Text(Languages.of(context).labelSelectAudio, style: TextStyle(
-                  fontSize: 20,
-                  fontFamily: "YTSans"
-                )),
+                Text(Languages.of(context).labelSelectAudio,
+                    style: TextStyle(fontSize: 20, fontFamily: "YTSans")),
               ],
             ),
           ),
@@ -103,101 +95,97 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
               shrinkWrap: true,
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
-                  onTap: () => _onDownload(widget.video.audioOnlyStreams[index]),
+                  onTap: () =>
+                      _onDownload(widget.video.audioOnlyStreams[index]),
                   child: Container(
-                    width: 125,
-                    margin: EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: widget.video.audioOnlyStreams[index] ==
-                          widget.video.audioWithBestAacQuality
-                          ? Theme.of(context).accentColor
-                          : Theme.of(context).iconTheme.color.withOpacity(0.1),
-                        width: 1.5,
-                      ),
-                      color: Theme.of(context).cardColor,
-                      boxShadow: [
-                        BoxShadow(
-                          blurRadius: 12,
-                          color: Colors.black.withOpacity(0.04)
-                        )
-                      ]
-                    ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        if (widget.video.audioOnlyStreams[index] == widget.video.audioWithBestAacQuality)
-                        Align(
-                          alignment: Alignment.topLeft,
-                          child: Container(
-                            padding: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).accentColor,
-                              borderRadius: BorderRadius.only(
-                                bottomRight: Radius.circular(10),
-                                topLeft: Radius.circular(5)
-                              )
-                            ),
-                            child: Text(
-                              Languages.of(context).labelBest,
-                              style: TextStyle(
-                                fontSize: 10,
-                                color: Colors.white
+                      width: 125,
+                      margin: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: widget.video.audioOnlyStreams[index] ==
+                                    widget.video.audioWithBestAacQuality
+                                ? Theme.of(context).accentColor
+                                : Theme.of(context)
+                                    .iconTheme
+                                    .color
+                                    .withOpacity(0.1),
+                            width: 1.5,
+                          ),
+                          color: Theme.of(context).cardColor,
+                          boxShadow: [
+                            BoxShadow(
+                                blurRadius: 12,
+                                color: Colors.black.withOpacity(0.04))
+                          ]),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          if (widget.video.audioOnlyStreams[index] ==
+                              widget.video.audioWithBestAacQuality)
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Container(
+                                padding: EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                    color: Theme.of(context).accentColor,
+                                    borderRadius: BorderRadius.only(
+                                        bottomRight: Radius.circular(10),
+                                        topLeft: Radius.circular(5))),
+                                child: Text(
+                                  Languages.of(context).labelBest,
+                                  style: TextStyle(
+                                      fontSize: 10, color: Colors.white),
+                                ),
                               ),
                             ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(EvaIcons.musicOutline,
+                                  size: 32,
+                                  color: Theme.of(context).accentColor),
+                              SizedBox(height: 4),
+                              Column(
+                                children: [
+                                  Text(
+                                    "${widget.video.audioOnlyStreams[index].formatName}",
+                                    overflow: TextOverflow.fade,
+                                    textAlign: TextAlign.center,
+                                    softWrap: false,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 14),
+                                  ),
+                                  Text(
+                                    "${widget.video.audioOnlyStreams[index].averageBitrate} Kbit/s",
+                                    overflow: TextOverflow.fade,
+                                    textAlign: TextAlign.center,
+                                    softWrap: false,
+                                    style: TextStyle(fontSize: 10),
+                                  ),
+                                  FutureBuilder(
+                                      future:
+                                          ExtractorHttpClient.getContentLength(
+                                              widget.video
+                                                  .audioOnlyStreams[index].url),
+                                      builder: (context, snapshot) {
+                                        return Text(
+                                          snapshot.hasData
+                                              ? "${((snapshot.data / 1024) / 1024).toStringAsFixed(2)} MB"
+                                              : "Loading...",
+                                          overflow: TextOverflow.fade,
+                                          textAlign: TextAlign.center,
+                                          softWrap: false,
+                                          style: TextStyle(fontSize: 10),
+                                        );
+                                      }),
+                                ],
+                              )
+                            ],
                           ),
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(EvaIcons.musicOutline, size: 32,
-                              color: Theme.of(context).accentColor),
-                            SizedBox(height: 4),
-                            Column(
-                              children: [
-                                Text(
-                                  "${widget.video.audioOnlyStreams[index].formatName}",
-                                  overflow: TextOverflow.fade,
-                                  textAlign: TextAlign.center,
-                                  softWrap: false,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 14
-                                  ),
-                                ),
-                                Text(
-                                  "${widget.video.audioOnlyStreams[index].averageBitrate} Kbit/s",
-                                  overflow: TextOverflow.fade,
-                                  textAlign: TextAlign.center,
-                                  softWrap: false,
-                                  style: TextStyle(
-                                    fontSize: 10
-                                  ),
-                                ),
-                                FutureBuilder(
-                                  future: ExtractorHttpClient.getContentLength(widget.video.audioOnlyStreams[index].url),
-                                  builder: (context, snapshot) {
-                                    return Text(
-                                      snapshot.hasData
-                                        ? "${((snapshot.data/1024)/1024).toStringAsFixed(2)} MB"
-                                        : "Loading...",
-                                      overflow: TextOverflow.fade,
-                                      textAlign: TextAlign.center,
-                                      softWrap: false,
-                                      style: TextStyle(
-                                        fontSize: 10
-                                      ),
-                                    );
-                                  }
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ],
-                    )
-                  ),
+                        ],
+                      )),
                 );
               },
             ),
@@ -209,7 +197,8 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
             children: [
               InkWell(
                 onTap: () {
-                  config.enableFFmpegActionType = !config.enableFFmpegActionType;
+                  config.enableFFmpegActionType =
+                      !config.enableFFmpegActionType;
                   setState(() {});
                 },
                 borderRadius: BorderRadius.circular(20),
@@ -218,57 +207,62 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
                   child: Row(
                     children: [
                       Checkbox(
-                        value: config.enableFFmpegActionType,
-                        onChanged: (_) {}
-                      ),
-                      Text(
-                        Languages.of(context).labelEnableAudioConversion,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500
-                        )
-                      )
+                          value: config.enableFFmpegActionType,
+                          onChanged: (_) {}),
+                      Text(Languages.of(context).labelEnableAudioConversion,
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w500))
                     ],
                   ),
                 ),
               ),
               Spacer(),
               AnimatedSwitcher(
-                duration: Duration(milliseconds: 400),
-                child: config.enableFFmpegActionType ? DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    items: [
-                      DropdownMenuItem<String>(
-                        child: Text('AAC (.m4a)', style: TextStyle(
-                          color: Theme.of(context).textTheme.bodyText1.color,
-                          fontWeight: FontWeight.w500
-                        )),
-                        value: 'AAC',
-                      ),
-                      DropdownMenuItem<String>(
-                        child: Text('OGG (.ogg)', style: TextStyle(
-                          color: Theme.of(context).textTheme.bodyText1.color,
-                          fontWeight: FontWeight.w500
-                        )),
-                        value: 'OGG Vorbis',
-                      ),
-                      DropdownMenuItem<String>(
-                        child: Text('MP3 (.mp3)', style: TextStyle(
-                          color: Theme.of(context).textTheme.bodyText1.color,
-                          fontWeight: FontWeight.w500
-                        )),
-                        value: 'MP3',
-                      ),
-                    ],
-                    onChanged: (String value) {
-                      config.ffmpegActionTypeFormat = value;
-                    },
-                    value: config.ffmpegActionTypeFormat,
-                    elevation: 1,
-                    dropdownColor: Theme.of(context).cardColor,
-                  ),
-                ) : Container()
-              ),
+                  duration: Duration(milliseconds: 400),
+                  child: config.enableFFmpegActionType
+                      ? DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            items: [
+                              DropdownMenuItem<String>(
+                                child: Text('AAC (.m4a)',
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1
+                                            .color,
+                                        fontWeight: FontWeight.w500)),
+                                value: 'AAC',
+                              ),
+                              DropdownMenuItem<String>(
+                                child: Text('OGG (.ogg)',
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1
+                                            .color,
+                                        fontWeight: FontWeight.w500)),
+                                value: 'OGG Vorbis',
+                              ),
+                              DropdownMenuItem<String>(
+                                child: Text('MP3 (.mp3)',
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1
+                                            .color,
+                                        fontWeight: FontWeight.w500)),
+                                value: 'MP3',
+                              ),
+                            ],
+                            onChanged: (String value) {
+                              config.ffmpegActionTypeFormat = value;
+                            },
+                            value: config.ffmpegActionTypeFormat,
+                            elevation: 1,
+                            dropdownColor: Theme.of(context).cardColor,
+                          ),
+                        )
+                      : Container()),
               SizedBox(width: 12)
             ],
           ),
@@ -277,12 +271,11 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
             margin: EdgeInsets.only(left: 12, bottom: 16),
             child: Row(
               children: [
-                Icon(EvaIcons.barChartOutline, color: Theme.of(context).accentColor),
+                Icon(EvaIcons.barChartOutline,
+                    color: Theme.of(context).accentColor),
                 SizedBox(width: 8),
-                Text(Languages.of(context).labelGainControls, style: TextStyle(
-                  fontSize: 20,
-                  fontFamily: "YTSans"
-                )),
+                Text(Languages.of(context).labelGainControls,
+                    style: TextStyle(fontSize: 20, fontFamily: "YTSans")),
               ],
             ),
           ),
@@ -292,48 +285,40 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
             children: <Widget>[
               SizedBox(width: 16),
               Text(
-                Languages.of(context).labelVolume+": ",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500
-                ),
+                Languages.of(context).labelVolume + ": ",
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
               Text(
                 volumeString(volumeModifier),
                 style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Theme.of(context).accentColor
-                ),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).accentColor),
               ),
             ],
           ),
           SizedBox(
             height: 50,
             child: FlutterSlider(
-              values: [volumeModifier*100, 200],
+              values: [volumeModifier * 100, 200],
               min: 0,
               max: 200,
               onDragging: (value, currentValue, upperValue) {
-                double value = (currentValue/100);
+                double value = (currentValue / 100);
                 value = double.parse(value.toStringAsFixed(2));
                 setState(() => volumeModifier = value);
               },
-              step: FlutterSliderStep(
-                isPercentRange: true,
-                rangeList: [
-                  FlutterSliderRangeStep(from: 0, to: 200, step: 5),
-                ]
-              ),
+              step: FlutterSliderStep(isPercentRange: true, rangeList: [
+                FlutterSliderRangeStep(from: 0, to: 200, step: 5),
+              ]),
               trackBar: FlutterSliderTrackBar(
                 inactiveTrackBar: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   color: Theme.of(context).cardColor,
                 ),
                 activeTrackBar: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  color: Theme.of(context).accentColor
-                ),
+                    borderRadius: BorderRadius.circular(4),
+                    color: Theme.of(context).accentColor),
               ),
               tooltip: FlutterSliderTooltip(
                 disabled: true,
@@ -362,19 +347,16 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
                       children: <Widget>[
                         SizedBox(width: 16),
                         Text(
-                          Languages.of(context).labelBassGain+": ",
+                          Languages.of(context).labelBassGain + ": ",
                           style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500
-                          ),
+                              fontSize: 14, fontWeight: FontWeight.w500),
                         ),
                         Text(
                           bassGain.toString(),
                           style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Theme.of(context).accentColor
-                          ),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).accentColor),
                         ),
                       ],
                     ),
@@ -387,21 +369,18 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
                         onDragging: (value, currentValue, upperValue) {
                           setState(() => bassGain = currentValue.toInt());
                         },
-                        step: FlutterSliderStep(
-                          isPercentRange: true,
-                          rangeList: [
-                            FlutterSliderRangeStep(from: -10, to: 10, step: 1),
-                          ]
-                        ),
+                        step:
+                            FlutterSliderStep(isPercentRange: true, rangeList: [
+                          FlutterSliderRangeStep(from: -10, to: 10, step: 1),
+                        ]),
                         trackBar: FlutterSliderTrackBar(
                           inactiveTrackBar: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: Theme.of(context).cardColor,
                           ),
                           activeTrackBar: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            color: Theme.of(context).accentColor
-                          ),
+                              borderRadius: BorderRadius.circular(4),
+                              color: Theme.of(context).accentColor),
                         ),
                         tooltip: FlutterSliderTooltip(
                           disabled: true,
@@ -429,19 +408,16 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
                       children: <Widget>[
                         SizedBox(width: 16),
                         Text(
-                          Languages.of(context).labelTrebleGain+": ",
+                          Languages.of(context).labelTrebleGain + ": ",
                           style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500
-                          ),
+                              fontSize: 14, fontWeight: FontWeight.w500),
                         ),
                         Text(
                           trebleGain.toString(),
                           style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: Theme.of(context).accentColor
-                          ),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: Theme.of(context).accentColor),
                         ),
                       ],
                     ),
@@ -454,21 +430,18 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
                         onDragging: (value, currentValue, upperValue) {
                           setState(() => trebleGain = currentValue.toInt());
                         },
-                        step: FlutterSliderStep(
-                          isPercentRange: true,
-                          rangeList: [
-                            FlutterSliderRangeStep(from: -10, to: 10, step: 1),
-                          ]
-                        ),
+                        step:
+                            FlutterSliderStep(isPercentRange: true, rangeList: [
+                          FlutterSliderRangeStep(from: -10, to: 10, step: 1),
+                        ]),
                         trackBar: FlutterSliderTrackBar(
                           inactiveTrackBar: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: Theme.of(context).cardColor,
                           ),
                           activeTrackBar: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            color: Theme.of(context).accentColor
-                          ),
+                              borderRadius: BorderRadius.circular(4),
+                              color: Theme.of(context).accentColor),
                         ),
                         tooltip: FlutterSliderTooltip(
                           disabled: true,
@@ -498,13 +471,14 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
               title: Container(
                 child: Row(
                   children: [
-                    Icon(EvaIcons.volumeDownOutline, color: Theme.of(context).accentColor),
+                    Icon(EvaIcons.volumeDownOutline,
+                        color: Theme.of(context).accentColor),
                     SizedBox(width: 8),
-                    Text("Normalize Audio", style: TextStyle(
-                      fontSize: 20,
-                      color: Theme.of(context).textTheme.bodyText1.color,
-                      fontFamily: "YTSans"
-                    )),
+                    Text("Normalize Audio",
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Theme.of(context).textTheme.bodyText1.color,
+                            fontFamily: "YTSans")),
                   ],
                 ),
               ),
@@ -513,6 +487,42 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu> with TickerProvid
                 setState(() => normalizeAudio = value);
               },
             ),
+          ),
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                SizedBox(width: 16),
+                GestureDetector(
+                  onTap: () async {
+                    _onDownload(widget.video.audioOnlyStreams[0]);
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                    ),
+                    padding: EdgeInsets.all(12),
+                    margin: EdgeInsets.only(right: 16),
+                    child: Row(
+                      children: [
+                        Icon(Icons.download_rounded,
+                            color: Theme.of(context).accentColor, size: 26),
+                        SizedBox(width: 8),
+                        Text(
+                          "Download",
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: Theme.of(context).textTheme.bodyText1.color,
+                              fontFamily: "YTSans"),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+            margin: EdgeInsets.only(bottom: 10, top: 10),
           ),
         ],
       ),

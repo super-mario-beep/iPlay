@@ -103,7 +103,7 @@ class _DownloadMenuState extends State<DownloadMenu> with TickerProviderStateMix
           onBack: () => Navigator.pop(context),
           onAudioTap: () => setState(() => 
             currentDownloadMenu = CurrentDownloadMenu.Audio),
-          onVideoTap: () => setState(() => 
+          onVideoTap: () => setState(() =>
             currentDownloadMenu = CurrentDownloadMenu.Video),
           onPlaylistTap: () => setState(() =>
             currentDownloadMenu = CurrentDownloadMenu.Playlist),

@@ -14,6 +14,7 @@ import 'package:newpipeextractor_dart/models/playlist.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/languages.dart';
 import 'package:songtube/internal/musicBrainzApi.dart';
+import 'package:songtube/lib.dart';
 import 'package:songtube/players/components/youtubePlayer/ui/comments.dart';
 import 'package:songtube/players/components/youtubePlayer/videoPlayer.dart';
 import 'package:songtube/provider/preferencesProvider.dart';
@@ -498,7 +499,7 @@ class _YoutubePlayerVideoPageState extends State<YoutubePlayerVideoPage> with Ti
     VideoPageProvider pageProvider = Provider.of<VideoPageProvider>(context);
     return OrientationBuilder(
       builder: (context, orientation) {
-        if (orientation == Orientation.portrait) {
+        if (orientation == Orientation.portrait && Lib.DOWNLOADING_ENABLED) {
           return VideoDownloadFab(
             readyToDownload: pageProvider.currentVideo == null ? false : true,
             onDownload: () {
