@@ -142,7 +142,7 @@ class GeneralSettings extends StatelessWidget {
           ),
         ),
         //AUTO DOWNLOAD
-        if(Lib.DOWNLOADING_ENABLED)
+        if(Lib.DOWNLOADING_ENABLED && false)
           SwitchListTile(
             title: Text(
               "Auto-download music",

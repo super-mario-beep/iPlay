@@ -79,29 +79,34 @@ class WatchHistoryRow extends StatelessWidget {
                   );
                 },
               )
-            : ListView.builder(
-                physics: BouncingScrollPhysics(),
-                scrollDirection: Axis.horizontal,
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return Container(
-                    margin: EdgeInsets.only(left: 12, right: 12),
-                    child: AspectRatio(
-                      aspectRatio: 16/9,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Shimmer.fromColors(
-                          baseColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
-                          highlightColor: Theme.of(context).cardColor,
-                          child: Container(
-                            color: Theme.of(context).scaffoldBackgroundColor
-                          ),
+            : Column(
+            children: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10, right: 10,top: 10),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(height: 25),
+                        Text(
+                          "Your history will be shown here",
+                          //"Discover new Channels to start building your feed!",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Theme.of(context)
+                                  .iconTheme
+                                  .color
+                                  .withOpacity(0.6),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              fontFamily: 'Product Sans'),
                         ),
-                      ),
-                    ),
-                  );
-                },
+                      ]),
+                ),
               )
+            ],
+          ),
         )
       ],
     );
