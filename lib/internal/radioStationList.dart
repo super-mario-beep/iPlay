@@ -5,8 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:songtube/internal/radioStreamingController.dart';
+import 'package:songtube/provider/preferencesProvider.dart';
 import 'dart:async';
+
+import 'package:songtube/ui/internal/popupMenu.dart';
 
 class RadioStationList extends StatefulWidget {
   final String name;
@@ -26,6 +30,26 @@ class RadioStation {
   int bitrate;
 
   RadioStation(this.name, this.url, this.country, this.favicon, this.bitrate);
+
+  static RadioStation fromMap(map) {
+    return RadioStation(
+      map['name'],
+      map['url'],
+      map['country'],
+      map['favicon'],
+      int.parse(map['bitrate']),
+    );
+  }
+
+  Map<dynamic, dynamic> toMap() {
+    return {
+      'name': name,
+      'url': url,
+      'country': country,
+      'favicon': favicon,
+      'bitrate': bitrate.toString(),
+    };
+  }
 }
 
 class _RadioStationList extends State<RadioStationList> {
@@ -115,6 +139,10 @@ class _RadioStationList extends State<RadioStationList> {
   Widget build(BuildContext context) {
     if (stations.isEmpty && loading) setRadioStations(context);
 
+    PreferencesProvider prefs = Provider.of<PreferencesProvider>(context);
+    List<RadioStation> favorites = prefs.favoriteRadios;
+
+
     return DefaultTabController(
       initialIndex: 0,
       length: 3,
@@ -174,6 +202,36 @@ class _RadioStationList extends State<RadioStationList> {
                                       .color
                                       .withOpacity(0.6)),
                             ),
+                            trailing: FlexiblePopupMenu(
+                                borderRadius: 10,
+                                items: [
+                                  !_containFavoriteRadio(favorites, station) ?
+                                  FlexiblePopupItem(
+                                      title: "Add to favorites",
+                                      value: "Add") :
+                                  FlexiblePopupItem(
+                                      title: "Remove from favorites",
+                                      value: "Remove")
+                                ],
+                                onItemTap: (String value) async {
+                                  if (value != null) {
+                                    switch (value) {
+                                      case "Add":
+                                        favorites.add(station);
+                                        prefs.favoriteRadios = favorites;
+                                        break;
+                                      case "Remove":
+                                        favorites.remove(station);
+                                        prefs.favoriteRadios = favorites;
+                                        break;
+                                    }
+                                  }
+                                },
+                                child: Container(
+                                  color: Colors.transparent,
+                                  padding: EdgeInsets.all(4),
+                                  child: Icon(Icons.more_vert, size: 18),
+                                )),
                             onTap: () async {
                               changeStreamStation(station);
                             });
@@ -289,5 +347,13 @@ class _RadioStationList extends State<RadioStationList> {
         ),
       ),
     );
+  }
+  _containFavoriteRadio(List<RadioStation> list, RadioStation station){
+    for(RadioStation r in list){
+      if(r.name == station.name){
+        return true;
+      }
+    }
+    return false;
   }
 }

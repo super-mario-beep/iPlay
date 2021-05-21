@@ -6,6 +6,7 @@ import 'package:newpipeextractor_dart/models/infoItems/video.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:songtube/internal/models/playlist.dart';
+import 'package:songtube/internal/radioStationList.dart';
 
 import 'mediaProvider.dart';
 
@@ -338,6 +339,29 @@ class PreferencesProvider extends ChangeNotifier {
         items.add(item);
     }
     return items.toSet().toList();
+  }
+
+  //Get favorite radios
+  List<RadioStation> get favoriteRadios {
+    var map = jsonDecode(prefs.getString('newFavoriteRadios') ?? "{}");
+    List<RadioStation> radios = [];
+    if (map.isNotEmpty) {
+      if (map['favoriteRadios'].isNotEmpty) {
+        map['favoriteRadios'].forEach((v) {
+          radios.add(RadioStation.fromMap(v));
+        });
+      }
+    }
+    return radios;
+  }
+  set favoriteRadios(List<RadioStation> radios) {
+    var map = radios.map((e) {
+      return e.toMap();
+    }).toList();
+    String json = jsonEncode({ 'favoriteRadios': map });
+    prefs.setString('newFavoriteRadios', json).then((_) {
+      notifyListeners();
+    });
   }
 
 }
