@@ -50,6 +50,7 @@ class Lib extends StatefulWidget {
 
   // ignore: non_constant_identifier_names
   static bool DOWNLOADING_ENABLED = false;
+  static String VERSION = "";
 
   @override
   _LibState createState() => _LibState();
@@ -78,6 +79,12 @@ class _LibState extends State<Lib> {
         _handleIntent(intent);
       }
     });
+    if(Lib.VERSION == ""){
+      PackageInfo.fromPlatform().then((android) async {
+        PackageInfo packageInfo = await PackageInfo.fromPlatform();
+        Lib.VERSION = packageInfo.version;
+      });
+    }
     WidgetsBinding.instance.addObserver(
       new LifecycleEventHandler(resumeCallBack: () async {
         setState(() {});
@@ -303,7 +310,6 @@ class _LibState extends State<Lib> {
   }
 
   Widget _currentScreen(screenIndex, bool youtubeMusicEnabled) {
-    if (youtubeMusicEnabled) {
       if (screenIndex == 0) {
         return HomeScreen();
       } else if (screenIndex == 1) {
@@ -317,20 +323,6 @@ class _LibState extends State<Lib> {
       } else {
         return Container();
       }
-    } else {
-      if (screenIndex == 0) {
-        return HomeScreen();
-      } else if (screenIndex == 1) {
-        return DownloadTab();
-      } else if (screenIndex == 2) {
-        return MediaScreen();
-      } else if (screenIndex == 3) {
-        return LibraryScreen();
-      } else {
-        setState((){ _screenIndex = 0; });
-        return Container();
-      }
-    }
   }
 
   FloatingWidgetTwins _currentFloatingTwins() {

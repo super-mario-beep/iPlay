@@ -6,6 +6,7 @@ import 'package:newpipeextractor_dart/models/video.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/downloadMenu/downloadMenu.dart';
 import 'package:songtube/internal/languages.dart';
+import 'package:songtube/lib.dart';
 import 'package:songtube/provider/managerProvider.dart';
 
 class VideoEngagement extends StatelessWidget {
@@ -69,6 +70,7 @@ class VideoEngagement extends StatelessWidget {
             ),
             onPressed: onSaveToPlaylist),
         //Download
+        if(Lib.DOWNLOADING_ENABLED)
         Container(
           child: GestureDetector(
             child: _engagementTile(

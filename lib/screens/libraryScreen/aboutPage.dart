@@ -1,9 +1,12 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/lib.dart';
 import 'package:songtube/provider/configurationProvider.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 
 class AboutPage extends StatelessWidget {
   @override
@@ -50,13 +53,27 @@ class AboutPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 32),
-                Text(
+                /*Text(
                   "iPlay",
                   style: TextStyle(
                       color: Theme.of(context).textTheme.bodyText1.color,
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                       fontFamily: 'Product Sans'),
+                ),*/
+                RichText(
+                  text: TextSpan(
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Theme.of(context).textTheme.bodyText1.color, fontWeight: FontWeight.w600,
+                      fontFamily: 'Product Sans',),
+                      children: [
+                        TextSpan(
+                            text: "iPlay"),
+                        TextSpan(
+                            text: "\nv. " + Lib.VERSION,
+                            style: TextStyle(fontWeight: FontWeight.w400,fontSize: 14))
+                      ]),
                 ),
                 Spacer(),
               ],

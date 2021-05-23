@@ -71,7 +71,7 @@ class DownloadTab extends StatelessWidget {
                 unselectedLabelColor: Theme.of(context).textTheme.bodyText1
                   .color.withOpacity(0.4),
                 indicator: MD2Indicator(
-                  indicatorSize: MD2IndicatorSize.tiny,
+                  indicatorSize: MD2IndicatorSize.normal,
                   indicatorHeight: 4,
                   indicatorColor: Theme.of(context).accentColor,
                 ),

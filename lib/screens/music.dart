@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:animations/animations.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_fade/image_fade.dart';
@@ -128,8 +129,8 @@ class _SubscriptionsScreenState extends State<SubscriptionsScreen> {
                     indicatorColor: Theme.of(context).accentColor,
                   ),
                   tabs: [
-                    Tab(child: Text("All")),
-                    Tab(child: Text("Favorites")),
+                    Tab(child:Text("All"),),
+                    Tab(child:Text("Favorites"),),
                   ],
                 )),
             Divider(

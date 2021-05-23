@@ -29,6 +29,7 @@ import 'package:songtube/ui/dialogs/loadingDialog.dart';
 import 'package:songtube/ui/internal/popupMenu.dart';
 import 'package:songtube/ui/internal/snackbar.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class StreamsLargeThumbnailView extends StatelessWidget {
   final List<dynamic> infoItems;
@@ -72,18 +73,27 @@ class StreamsLargeThumbnailView extends StatelessWidget {
                   builder: (context, provider, child) {
                     return GestureDetector(
                       onTap: () {
-                        if (infoItem is StreamInfoItem || infoItem is PlaylistInfoItem) {
-                          provider.infoItem = infoItem;
-                        } else {
-                          Navigator.push(context,
-                            BlurPageRoute(
-                              blurStrength: Provider.of<PreferencesProvider>
-                                (context, listen: false).enableBlurUI ? 20 : 0,
-                              builder: (_) => 
-                              YoutubeChannelPage(
-                                url: infoItem.url,
-                                name: infoItem.name,
-                          )));
+                        print("VIDEO CLICKED");
+                        if(Lib.DOWNLOADING_ENABLED) {
+                          if (infoItem is StreamInfoItem ||
+                              infoItem is PlaylistInfoItem) {
+                            provider.infoItem = infoItem;
+                          } else {
+                            Navigator.push(context,
+                                BlurPageRoute(
+                                    blurStrength: Provider
+                                        .of<PreferencesProvider>
+                                      (context, listen: false)
+                                        .enableBlurUI ? 20 : 0,
+                                    builder: (_) =>
+                                        YoutubeChannelPage(
+                                          url: infoItem.url,
+                                          name: infoItem.name,
+                                        )));
+                          }
+                        }else{
+                          //No streaming allowed
+                          launch(infoItem.url);
                         }
                       },
                       child: child,
