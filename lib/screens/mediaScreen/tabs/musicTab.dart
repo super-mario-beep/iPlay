@@ -14,7 +14,8 @@ import 'package:songtube/screens/mediaScreen/components/songsListView.dart';
 
 class MediaMusicTab extends StatelessWidget {
   final List<MediaItem> songs;
-  MediaMusicTab(this.songs);
+  final bool isNotPlaylistView;
+  MediaMusicTab(this.songs, {this.isNotPlaylistView = true});
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +32,7 @@ class MediaMusicTab extends StatelessWidget {
         child: SongsListView(
           songs: songs,
           searchQuery: "",
+          isNotPlaylistView: false,
         ),
       );
     }

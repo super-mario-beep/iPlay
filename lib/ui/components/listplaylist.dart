@@ -64,7 +64,9 @@ class _MusicScreenAlbumsTabState extends State<ListPlaylists> {
                           .enableBlurUI
                           ? 20
                           : 0,
-                      builder: (_) => EditPlaylist(playlist)));
+                      builder: (_) => EditPlaylist(playlist))).then((value) => {
+                  setState(() {})
+                });
               },
               trailing: Container(
                 decoration: BoxDecoration(

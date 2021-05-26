@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/models/playlist.dart';
+import 'package:songtube/pages/addInAudioPlaylist.dart';
 import 'package:songtube/provider/mediaProvider.dart';
 import 'package:songtube/provider/preferencesProvider.dart';
 import 'package:songtube/screens/mediaScreen/tabs/musicTab.dart';
+import 'package:songtube/ui/animations/blurPageRoute.dart';
 import 'package:songtube/ui/internal/popupMenu.dart';
-
 
 class EditPlaylist extends StatefulWidget {
   final String name;
@@ -36,11 +37,12 @@ class _EditPlaylist extends State<EditPlaylist> {
     List<MediaItem> allMediaItems = mediaProvider.databaseSongs;
     List<String> downloadedSongsNames = prefs.getSongsForPlaylist(widget.name);
     List<MediaItem> downloadedMediaInPlaylist = [];
-    bool isOnHomePage = prefs.homeTabPlaylist == widget.name ? true : false;
+
 
     for (MediaItem media in allMediaItems.toSet().toList()) {
-      if (downloadedSongsNames.contains(media.title))
+      if (downloadedSongsNames.contains(media.title)) {
         downloadedMediaInPlaylist.add(media);
+      }
     }
 
     return Scaffold(
@@ -68,16 +70,21 @@ class _EditPlaylist extends State<EditPlaylist> {
                         content: SingleChildScrollView(
                           child: ListBody(
                             children: <Widget>[
-                              Text('Do you really want to delete this playlist?'),
+                              Text(
+                                  'Do you really want to delete this playlist?'),
                             ],
                           ),
                         ),
                         actions: <Widget>[
                           TextButton(
-                            child: Text('Delete',style: TextStyle(color: Theme.of(context).accentColor),),
+                            child: Text(
+                              'Delete',
+                              style: TextStyle(
+                                  color: Theme.of(context).accentColor),
+                            ),
                             onPressed: () {
                               List<String> list = prefs.audioPlaylists;
-                              prefs.setSongsForPlaylist(widget.name,[]);
+                              prefs.setSongsForPlaylist(widget.name, []);
                               list.remove(widget.name);
                               prefs.audioPlaylists = list;
                               Navigator.of(context).pop();
@@ -85,7 +92,11 @@ class _EditPlaylist extends State<EditPlaylist> {
                             },
                           ),
                           TextButton(
-                            child: Text('Cancel',style: TextStyle(color: Theme.of(context).accentColor),),
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(
+                                  color: Theme.of(context).accentColor),
+                            ),
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
@@ -172,78 +183,111 @@ class _EditPlaylist extends State<EditPlaylist> {
                 Container(child: PlaylistSongList(songs: downloadedMediaInPlaylist, hasDownloadType: true),),
               ],
             )*/
-      Container(
-        child: MediaMusicTab(downloadedMediaInPlaylist),
-      )
+          Container(
+              child: MediaMusicTab(downloadedMediaInPlaylist,isNotPlaylistView: false),
+            )
           : Column(
-        children: [
-          Expanded(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Your playlist has no music",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Theme.of(context)
-                              .iconTheme
-                              .color
-                              .withOpacity(0.6),
-                          fontSize: 22,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Product Sans'),
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      "Try add some",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Theme.of(context)
-                              .iconTheme
-                              .color
-                              .withOpacity(0.6),
-                          fontSize: 22,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Product Sans'),
-                    ),
-                    SizedBox(height: 16),
-                    GestureDetector(
-                      onTap: () async {
-                        //go to downloads
-                      },
-                      child: Container(
-                        height: 50,
-                        width: 50,
-                        margin: EdgeInsets.only(left: 8, right: 8),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(100),
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Theme.of(context)
-                                      .accentColor
-                                      .withOpacity(0.2),
-                                  blurRadius: 12,
-                                  spreadRadius: 0.2)
-                            ],
-                            border: Border.all(
-                                color: Theme.of(context).accentColor),
-                            color: Theme.of(context).cardColor),
-                        child: Center(
-                          child: Icon(Icons.add,
-                              color: Theme.of(context).accentColor),
-                        ),
+              children: [
+                Expanded(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Your playlist has no music",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .iconTheme
+                                    .color
+                                    .withOpacity(0.6),
+                                fontSize: 22,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Product Sans'),
+                          ),
+                          SizedBox(height: 16),
+                          Text(
+                            "Try add some",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: Theme.of(context)
+                                    .iconTheme
+                                    .color
+                                    .withOpacity(0.6),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w400,
+                                fontFamily: 'Product Sans'),
+                          ),
+                          SizedBox(height: 16),
+                          GestureDetector(
+                            onTap: () async {
+                              Navigator.push(
+                                      context,
+                                      BlurPageRoute(
+                                          blurStrength:
+                                              Provider.of<PreferencesProvider>(
+                                                          context,
+                                                          listen: false)
+                                                      .enableBlurUI
+                                                  ? 20
+                                                  : 0,
+                                          builder: (_) =>
+                                              AddAudioInPlaylist(widget.name)))
+                                  .then((value) => {setState(() {})});
+                            },
+                            child: Container(
+                              height: 50,
+                              width: 50,
+                              margin: EdgeInsets.only(left: 8, right: 8),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(100),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Theme.of(context)
+                                            .accentColor
+                                            .withOpacity(0.2),
+                                        blurRadius: 12,
+                                        spreadRadius: 0.2)
+                                  ],
+                                  border: Border.all(
+                                      color: Theme.of(context).accentColor),
+                                  color: Theme.of(context).cardColor),
+                              child: Center(
+                                child: Icon(Icons.add,
+                                    color: Theme.of(context).accentColor),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ),
-        ],
+      floatingActionButton: FloatingActionButton(
+        heroTag: "btn1",
+        onPressed: () {
+          Navigator.push(
+            context,
+            BlurPageRoute(
+              blurStrength:
+                  Provider.of<PreferencesProvider>(context, listen: false)
+                          .enableBlurUI
+                      ? 20
+                      : 0,
+              builder: (_) => AddAudioInPlaylist(widget.name),
+            ),
+          ).then((value) => {setState(() {})});
+        },
+        child: const Icon(
+          Icons.add,
+          size: 28,
+        ),
+        backgroundColor: Theme.of(context).accentColor,
       ),
     );
   }
@@ -307,13 +351,13 @@ class _CreatePlaylistDialogState extends State<CreatePlaylistDialog> {
               "Rename",
               style: TextStyle(
                   color:
-                  controller.text.isNotEmpty && controller.text.length > 3
-                      ? Theme.of(context).accentColor
-                      : Theme.of(context)
-                      .textTheme
-                      .bodyText1
-                      .color
-                      .withOpacity(0.4)),
+                      controller.text.isNotEmpty && controller.text.length > 3
+                          ? Theme.of(context).accentColor
+                          : Theme.of(context)
+                              .textTheme
+                              .bodyText1
+                              .color
+                              .withOpacity(0.4)),
             ),
             onPressed: controller.text.isNotEmpty && controller.text.length > 3
                 ? () => Navigator.pop(context, controller.text)

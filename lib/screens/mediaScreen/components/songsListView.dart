@@ -30,11 +30,13 @@ class SongsListView extends StatelessWidget {
   final List<MediaItem> songs;
   final bool hasDownloadType;
   final String searchQuery;
+  final bool isNotPlaylistView;
 
   SongsListView(
       {@required this.songs,
       this.hasDownloadType = false,
-      this.searchQuery = ""});
+      this.searchQuery = "",
+      this.isNotPlaylistView = true});
 
   @override
   Widget build(BuildContext context) {
@@ -111,6 +113,7 @@ class SongsListView extends StatelessWidget {
                   borderRadius: 10,
                   items: [
                     FlexiblePopupItem(title: "Delete song", value: "Delete"),
+                    if(isNotPlaylistView)
                     FlexiblePopupItem(
                         title: "Add to playlist", value: "Add to playlist")
                   ],
