@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 
 // Packages
 import 'package:flutter_material_color_picker/flutter_material_color_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:songtube/internal/languages.dart';
+import 'package:songtube/provider/preferencesProvider.dart';
 
 // UI
 import 'package:songtube/ui/animations/fadeIn.dart';
@@ -21,6 +23,14 @@ class AccentPicker extends StatefulWidget {
 class _AccentPickerState extends State<AccentPicker> {
   @override
   Widget build(BuildContext context) {
+    PreferencesProvider prefs = Provider.of<PreferencesProvider>(context);
+    Color favoriteColor;
+    if(prefs.favoriteColor == 0){
+      favoriteColor = Colors.red;
+    }else{
+      favoriteColor = new Color(prefs.favoriteColor);
+    }
+
     return FadeInTransition(
       duration: Duration(milliseconds: 250),
       child: Dialog(
@@ -75,8 +85,8 @@ class _AccentPickerState extends State<AccentPicker> {
                     colors: const <ColorSwatch>[
                       Colors.red,
                       Colors.redAccent,
-                      Colors.pink,
                       Colors.pinkAccent,
+                      Colors.pink,
                       Colors.purple,
                       Colors.purpleAccent,
                       Colors.deepPurpleAccent,
@@ -89,8 +99,8 @@ class _AccentPickerState extends State<AccentPicker> {
                       Colors.cyan,
                       Colors.cyanAccent,
                       Colors.teal,
-                      Colors.tealAccent,
                       Colors.green,
+                      Colors.tealAccent,
                       Colors.greenAccent,
                       Colors.lightGreen,
                       Colors.lightGreenAccent,
@@ -104,8 +114,11 @@ class _AccentPickerState extends State<AccentPicker> {
                       Colors.orangeAccent,
                       Colors.deepOrangeAccent,
                     ],
-                    onMainColorChange: (color) => widget.onColorChanged(color),
-                    selectedColor: Theme.of(context).accentColor
+                    onMainColorChange: (color) => {
+                      widget.onColorChanged(color),
+                      prefs.favoriteColor = color.value
+                    },
+                    selectedColor: favoriteColor
                   ),
                 ),
               ),

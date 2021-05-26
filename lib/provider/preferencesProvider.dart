@@ -364,4 +364,14 @@ class PreferencesProvider extends ChangeNotifier {
     });
   }
 
+  //Favorite color fix
+  int get favoriteColor{
+    return prefs.getInt('favoriteColor') ?? 0;
+  }
+  set favoriteColor(int value){
+    prefs.setInt('favoriteColor', value);
+    notifyListeners();
+  }
+
+
 }
