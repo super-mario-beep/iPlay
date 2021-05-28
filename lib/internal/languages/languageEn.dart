@@ -207,10 +207,10 @@ class LanguageEn extends Languages {
   @override
   String get labelDeleteCacheJustification => "Clear SongTube Cache";
   @override
-  String get labelAndroid11Fix => "Android 11 Fix";
+  String get labelAndroid11Fix => "Android 11";
   @override
-  String get labelAndroid11FixJustification => "Fixes Download issues on " +
-    "Android 10 & 11";
+  String get labelAndroid11FixJustification => "Fixes storage & download issues on " +
+    "Android 11";
   @override
   String get labelBackup => "Backup";
   @override

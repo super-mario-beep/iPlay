@@ -154,7 +154,7 @@ class _LibState extends State<Lib> {
       bottomSheets.add(DisclaimerSheet());
       config.disclaimerAccepted = true;
     }
-    if(false){//if (config.showDownloadFixDialog && config.preferences.sdkInt >= 29) {
+    if(config.showDownloadFixDialog && config.preferences.sdkInt >= 30) {
       bottomSheets.add(DownloadFixSheet());
       config.showDownloadFixDialog = false;
     }

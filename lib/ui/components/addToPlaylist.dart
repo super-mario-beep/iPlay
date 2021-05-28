@@ -2,9 +2,11 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:newpipeextractor_dart/models/infoItems/video.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/downloadMenu/downloadMenu.dart';
 import 'package:songtube/internal/languages.dart';
 import 'package:songtube/internal/models/playlist.dart';
 import 'package:songtube/lib.dart';
+import 'package:songtube/provider/managerProvider.dart';
 import 'package:songtube/provider/mediaProvider.dart';
 import 'package:songtube/provider/preferencesProvider.dart';
 
@@ -214,7 +216,37 @@ class _AddStreamToPlaylistSheetState extends State<AddStreamToPlaylistSheet>
                             songs.add(widget.stream.name);
                             prefs.setSongsForPlaylist(playlist, songs);
                           } else {
-                            //Download & Add
+                            /*showModalBottomSheet<dynamic>(
+                                isScrollControlled: true,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(30),
+                                      topRight: Radius.circular(30)
+                                  ),
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                context: context,
+                                builder: (context) {
+                                  String url = widget.stream.url;
+                                  return Wrap(
+                                    children: [
+                                      Consumer<ManagerProvider>(
+                                          builder: (context, provider, _) {
+                                            return DownloadMenu(
+                                              videoUrl: url,
+                                              scaffoldState: provider
+                                                  .internalScaffoldKey.currentState,
+                                            );
+                                          }
+                                      ),
+                                    ],
+                                  );
+                                }
+                                ).then((value) => {
+                                  songs.add(widget.stream.name),
+                                  prefs.setSongsForPlaylist(playlist, songs),
+                                  Navigator.pop(context),
+                            });*/
                           }
                           setState(() {
                             _AddStreamToPlaylistSheetState createState() =>

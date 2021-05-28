@@ -25,30 +25,6 @@ class GeneralSettings extends StatelessWidget {
 
     return ListView(
       children: <Widget>[
-        FutureBuilder(
-          future: DeviceInfoPlugin().androidInfo,
-          builder: (context, AsyncSnapshot<AndroidDeviceInfo> info) {
-            if (info.hasData && info.data.version.sdkInt > 29) {
-              return ListTile(
-                title: Text(
-                  Languages.of(context).labelAndroid11Fix,
-                  style: TextStyle(
-                    color: Theme.of(context).textTheme.bodyText1.color,
-                    fontWeight: FontWeight.w500
-                  ),
-                ),
-                subtitle: Text(Languages.of(context).labelAndroid11FixJustification,
-                  style: TextStyle(fontSize: 12)
-                ),
-                onTap: () {
-                  NativeMethod.requestAllFilesPermission();
-                },
-              );
-            } else {
-              return Container();
-            }
-          }
-        ),
         //LANG
         ListTile(
           title: Text(
@@ -142,6 +118,30 @@ class GeneralSettings extends StatelessWidget {
           ),
         ),
         //AUTO DOWNLOAD
+        FutureBuilder(
+            future: DeviceInfoPlugin().androidInfo,
+            builder: (context, AsyncSnapshot<AndroidDeviceInfo> info) {
+              if (info.hasData && info.data.version.sdkInt > 29) {
+                return ListTile(
+                  title: Text(
+                    Languages.of(context).labelAndroid11Fix,
+                    style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyText1.color,
+                        fontWeight: FontWeight.w500
+                    ),
+                  ),
+                  subtitle: Text(Languages.of(context).labelAndroid11FixJustification,
+                      style: TextStyle(fontSize: 12)
+                  ),
+                  onTap: () {
+                    NativeMethod.requestAllFilesPermission();
+                  },
+                );
+              } else {
+                return Container();
+              }
+            }
+        ),
         if(Lib.DOWNLOADING_ENABLED && false)
           SwitchListTile(
             title: Text(
