@@ -50,6 +50,7 @@ class Lib extends StatefulWidget {
 
   // ignore: non_constant_identifier_names
   static bool DOWNLOADING_ENABLED = false;
+  static final bool HAS_ADS = false;
   static String VERSION = "";
 
   @override

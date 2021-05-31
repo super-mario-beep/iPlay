@@ -17,20 +17,20 @@ import 'package:rxdart/rxdart.dart';
 
 class CollapsedPanel extends StatelessWidget {
   final double borderRadius;
-  CollapsedPanel({
-    this.borderRadius
-  });
+
+  CollapsedPanel({this.borderRadius});
+
   //ignore: close_sinks
   final BehaviorSubject<double> _dragPositionSubject =
-    BehaviorSubject.seeded(null);
+      BehaviorSubject.seeded(null);
+
   @override
   Widget build(BuildContext context) {
     return Container(
       height: kBottomNavigationBarHeight * 1.15,
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(10)
-      ),
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(10)),
       child: Row(
         children: [
           // Song AlbumArt & Title and Author
@@ -47,8 +47,8 @@ class CollapsedPanel extends StatelessWidget {
                       width: 50,
                       fadeInDuration: Duration(milliseconds: 400),
                       placeholder: MemoryImage(kTransparentImage),
-                      image: FileImage(File(AudioService.currentMediaItem
-                        .artUri.replaceAll("file://", ""))),
+                      image: FileImage(File(AudioService.currentMediaItem.artUri
+                          .replaceAll("file://", ""))),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -67,10 +67,8 @@ class CollapsedPanel extends StatelessWidget {
                           direction: Axis.horizontal,
                           child: Text(
                             "${AudioService.currentMediaItem.title}",
-                            style: TextStyle(
-                              fontFamily: 'YTSans',
-                              fontSize: 16
-                            ),
+                            style:
+                                TextStyle(fontFamily: 'YTSans', fontSize: 16),
                             maxLines: 1,
                             overflow: TextOverflow.fade,
                             softWrap: false,
@@ -80,10 +78,13 @@ class CollapsedPanel extends StatelessWidget {
                         Text(
                           "${AudioService.currentMediaItem.artist}",
                           style: TextStyle(
-                            fontFamily: 'YTSans',
-                            fontSize: 11,
-                            color: Theme.of(context).textTheme.bodyText1.color.withOpacity(0.6)
-                          ),
+                              fontFamily: 'YTSans',
+                              fontSize: 11,
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1
+                                  .color
+                                  .withOpacity(0.6)),
                           overflow: TextOverflow.fade,
                           softWrap: false,
                           maxLines: 1,
@@ -98,42 +99,57 @@ class CollapsedPanel extends StatelessWidget {
           // Play/Pause
           SizedBox(width: 8),
           StreamBuilder<ScreenState>(
-            stream: screenStateStream,
-            builder: (context, snapshot) {
-              final screenState = snapshot.data;
-              final state = screenState?.playbackState;
-              final playing = state?.playing ?? false;
-              return Stack(
-                alignment: Alignment.center,
-                children: [
-                  StreamBuilder(
-                    stream: Rx.combineLatest2<double, double, double>(
-                      _dragPositionSubject.stream,
-                      Stream.periodic(Duration(milliseconds: 1000)),
-                      (dragPosition, _) => dragPosition),
-                    builder: (context, snapshot) {
-                      Duration position = state?.currentPosition ?? Duration.zero;
-                      Duration duration = AudioService.currentMediaItem?.duration ?? Duration.zero;
-                      return CircularProgressIndicator(
-                        strokeWidth: 3,
-                        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                        valueColor: AlwaysStoppedAnimation(Theme.of(context).accentColor),
-                        value: (position.inMilliseconds/duration.inMilliseconds),
-                      );
-                    }
-                  ),
-                  IconButton(
-                    icon: playing
-                      ? Icon(MdiIcons.pause, size: 22)
-                      : Icon(MdiIcons.play, size: 22),
-                    onPressed: playing
-                      ? () => AudioService.pause()
-                      : () => AudioService.play(),
-                  ),
-                ],
-              );
-            }
-          ),
+              stream: screenStateStream,
+              builder: (context, snapshot) {
+                final screenState = snapshot.data;
+                final state = screenState?.playbackState;
+                final playing = state?.playing ?? false;
+                return Row(
+                  children: [
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        StreamBuilder(
+                            stream: Rx.combineLatest2<double, double, double>(
+                                _dragPositionSubject.stream,
+                                Stream.periodic(Duration(milliseconds: 1000)),
+                                (dragPosition, _) => dragPosition),
+                            builder: (context, snapshot) {
+                              Duration position =
+                                  state?.currentPosition ?? Duration.zero;
+                              Duration duration =
+                                  AudioService.currentMediaItem?.duration ??
+                                      Duration.zero;
+                              return CircularProgressIndicator(
+                                strokeWidth: 3,
+                                backgroundColor:
+                                    Theme.of(context).scaffoldBackgroundColor,
+                                valueColor: AlwaysStoppedAnimation(
+                                    Theme.of(context).accentColor),
+                                value: (position.inMilliseconds /
+                                    duration.inMilliseconds),
+                              );
+                            }),
+                        IconButton(
+                          icon: playing
+                              ? Icon(MdiIcons.pause, size: 22)
+                              : Icon(MdiIcons.play, size: 22),
+                          onPressed: playing
+                              ? () => AudioService.pause()
+                              : () => AudioService.play(),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.close,size: 22,),
+                      onPressed: () async{
+                        AudioService.pause();
+                        await AudioService.stop();
+                      },
+                    ),
+                  ],
+                );
+              }),
           SizedBox(width: 16)
         ],
       ),

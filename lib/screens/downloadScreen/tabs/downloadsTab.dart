@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 // Internal
 import 'package:songtube/provider/mediaProvider.dart';
+import 'package:songtube/provider/preferencesProvider.dart';
 import 'package:songtube/screens/mediaScreen/components/mediaListBase.dart';
 
 // Packages

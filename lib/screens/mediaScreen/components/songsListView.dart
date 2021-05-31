@@ -16,6 +16,7 @@ import 'package:songtube/players/videoPlayer.dart';
 import 'package:songtube/provider/managerProvider.dart';
 import 'package:songtube/provider/mediaProvider.dart';
 import 'package:songtube/provider/preferencesProvider.dart';
+import 'package:songtube/provider/videoPageProvider.dart';
 import 'package:songtube/ui/animations/blurPageRoute.dart';
 import 'package:songtube/ui/components/addToPlaylist.dart';
 import 'package:songtube/ui/components/addToPlaylistDownloaded.dart';
@@ -47,7 +48,7 @@ class SongsListView extends StatelessWidget {
       itemBuilder: (context, index) {
         MediaItem song = songs[index];
         if (searchQuery == "") {
-          return ListTile(
+          return Container(margin: EdgeInsets.only(bottom: index == songs.length-1 ? 75 : 0),child: ListTile(
               title: Text(
                 song.title,
                 maxLines: 1,
@@ -73,22 +74,6 @@ class SongsListView extends StatelessWidget {
               leading: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (hasDownloadType)
-                    Container(
-                      height: 30,
-                      width: 30,
-                      margin: EdgeInsets.only(right: 16),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.black12.withOpacity(0.04)),
-                      child: Icon(
-                        song.extras["downloadType"] == "Audio"
-                            ? EvaIcons.musicOutline
-                            : EvaIcons.videoOutline,
-                        color: Theme.of(context).iconTheme.color,
-                        size: 20,
-                      ),
-                    ),
                   Hero(
                     tag: song.title,
                     child: Container(
@@ -196,7 +181,10 @@ class SongsListView extends StatelessWidget {
                   if (listEquals(songs, AudioService.queue) == false) {
                     await AudioService.updateQueue(songs);
                   }
-                  await AudioService.playMediaItem(songs[index]);
+                  VideoPageProvider tmp = Provider.of<VideoPageProvider>(context,listen: false);
+                  await AudioService.playMediaItem(songs[index]).then((value) => {
+                    tmp.closeVideoPanel()
+                  });
                 } else {
                   Navigator.push(
                       context,
@@ -206,7 +194,7 @@ class SongsListView extends StatelessWidget {
                                 path: song.id,
                               ))));
                 }
-              });
+              }),);
         } else {
           return Container();
         }

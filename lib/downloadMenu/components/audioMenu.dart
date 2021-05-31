@@ -95,8 +95,7 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu>
               shrinkWrap: true,
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
-                  onTap: () =>
-                      _onDownload(widget.video.audioOnlyStreams[index]),
+                  onTap: () {},
                   child: Container(
                       width: 125,
                       margin: EdgeInsets.all(12),
@@ -142,14 +141,14 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu>
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(EvaIcons.musicOutline,
+                              Icon(index == 0 ? EvaIcons.musicOutline : EvaIcons.lock,
                                   size: 32,
                                   color: Theme.of(context).accentColor),
                               SizedBox(height: 4),
                               Column(
                                 children: [
                                   Text(
-                                    "${widget.video.audioOnlyStreams[index].formatName}",
+                                    index == 0 ? "${widget.video.audioOnlyStreams[index].formatName}" : "Coming soon",
                                     overflow: TextOverflow.fade,
                                     textAlign: TextAlign.center,
                                     softWrap: false,
@@ -191,7 +190,7 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu>
             ),
           ),
           // Enable Disable Conversion
-          Row(
+          /*Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -265,7 +264,7 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu>
                       : Container()),
               SizedBox(width: 12)
             ],
-          ),
+          ),*/
           // Gain Controls
           Container(
             margin: EdgeInsets.only(left: 12, bottom: 16),
@@ -463,7 +462,7 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu>
             ],
           ),
           SizedBox(height: 8),
-          GestureDetector(
+         /*GestureDetector(
             onTap: () {
               setState(() => normalizeAudio = !normalizeAudio);
             },
@@ -487,7 +486,7 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu>
                 setState(() => normalizeAudio = value);
               },
             ),
-          ),
+          ),*/
           Container(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -495,6 +494,7 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu>
                 SizedBox(width: 16),
                 GestureDetector(
                   onTap: () async {
+                    normalizeAudio = true;
                     _onDownload(widget.video.audioOnlyStreams[0]);
                   },
                   child: Container(

@@ -373,5 +373,14 @@ class PreferencesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  //Shuffle
+  bool get shuffle{
+    return prefs.getBool('shuffle') ?? false;
+  }
+  set shuffle(bool value){
+    prefs.setBool('shuffle', value);
+    notifyListeners();
+  }
+
 
 }

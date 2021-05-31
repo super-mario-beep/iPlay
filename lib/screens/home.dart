@@ -36,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     ManagerProvider manager =
-        Provider.of<ManagerProvider>(context, listen: false);
+    Provider.of<ManagerProvider>(context, listen: false);
     controller = TabController(length: 3, vsync: this);
     controller.addListener(() {
       int tabIndex = controller.index;
@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ];
     }
 
-    return AutoHideScaffold(
+    return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Theme.of(context).cardColor,
       appBar: PreferredSize(
@@ -112,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               onLoadPlaylist: (id) async {
                 showDialog(context: context, builder: (_) => LoadingDialog());
                 YoutubePlaylist playlist =
-                    await PlaylistExtractor.getPlaylistDetails(id);
+                await PlaylistExtractor.getPlaylistDetails(id);
                 Provider.of<VideoPageProvider>(context, listen: false)
                     .infoItem = playlist.toPlaylistInfoItem();
                 Navigator.pop(context);
@@ -189,57 +189,57 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               Expanded(
                   child: manager.showSearchBar
                       ? Container(
-                          color: Theme.of(context).cardColor,
-                          child: StreamsLargeThumbnailView(
-                            infoItems: manager
-                                    ?.youtubeSearch?.dynamicSearchResultsList ??
-                                [],
-                            onReachingListEnd: () {
-                              manager.searchYoutube(
-                                  query: manager.youtubeSearch.query);
-                            },
-                          ),
-                        )
+                    color: Theme.of(context).cardColor,
+                    child: StreamsLargeThumbnailView(
+                      infoItems: manager
+                          ?.youtubeSearch?.dynamicSearchResultsList ??
+                          [],
+                      onReachingListEnd: () {
+                        manager.searchYoutube(
+                            query: manager.youtubeSearch.query);
+                      },
+                    ),
+                  )
                       : TabBarView(
-                          controller: controller, children: _tabsView)),
+                      controller: controller, children: _tabsView)),
             ],
           ),
           AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
               child: manager.searchBarFocusNode.hasFocus
                   ? Column(
-                      children: [
-                        Container(
-                          height: manager.showSearchBar ? 0 : 40,
-                          color: Theme.of(context).cardColor,
-                        ),
-                        Expanded(
-                          child: Container(
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            child: Consumer<ManagerProvider>(
-                                builder: (context, manager, _) {
-                              return SearchHistoryList(
-                                searchQuery: manager.searchController.text,
-                                onItemTap: (String item) {
-                                  manager.searchController.text = item;
-                                  manager.searchBarFocusNode.unfocus();
-                                  manager.youtubeSearchQuery = item;
-                                  controller.animateTo(0);
-                                  manager.searchYoutube(
-                                      query: item, forceReload: true);
-                                  if (item.length > 1) {
-                                    Future.delayed(
-                                        Duration(milliseconds: 400),
-                                        () => config.addStringtoSearchHistory(
-                                            item.trim()));
-                                  }
-                                },
-                              );
-                            }),
-                          ),
-                        ),
-                      ],
-                    )
+                children: [
+                  Container(
+                    height: manager.showSearchBar ? 0 : 40,
+                    color: Theme.of(context).cardColor,
+                  ),
+                  Expanded(
+                    child: Container(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      child: Consumer<ManagerProvider>(
+                          builder: (context, manager, _) {
+                            return SearchHistoryList(
+                              searchQuery: manager.searchController.text,
+                              onItemTap: (String item) {
+                                manager.searchController.text = item;
+                                manager.searchBarFocusNode.unfocus();
+                                manager.youtubeSearchQuery = item;
+                                controller.animateTo(0);
+                                manager.searchYoutube(
+                                    query: item, forceReload: true);
+                                if (item.length > 1) {
+                                  Future.delayed(
+                                      Duration(milliseconds: 400),
+                                          () => config.addStringtoSearchHistory(
+                                          item.trim()));
+                                }
+                              },
+                            );
+                          }),
+                    ),
+                  ),
+                ],
+              )
                   : Container())
         ],
       ),

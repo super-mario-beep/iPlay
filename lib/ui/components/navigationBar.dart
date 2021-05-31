@@ -8,73 +8,55 @@ class AppBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onItemTap;
   final bool enableYoutubeMusicScreen;
-  AppBottomNavigationBar({
-    @required this.currentIndex,
-    @required this.onItemTap,
-    @required this.enableYoutubeMusicScreen
-  });
+
+  AppBottomNavigationBar(
+      {@required this.currentIndex,
+      @required this.onItemTap,
+      @required this.enableYoutubeMusicScreen});
+
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12.withOpacity(0.05),
-            spreadRadius: 0.1,
-            blurRadius: 10
-          ),
-        ],
-        border: Border(
-          top: BorderSide(
-            width: 1,
-            color: Colors.grey[600].withOpacity(0.1)
-          )
-        )
-      ),
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black12.withOpacity(0.05),
+                spreadRadius: 0.1,
+                blurRadius: 10),
+          ],
+          border: Border(
+              top: BorderSide(
+                  width: 1, color: Colors.grey[600].withOpacity(0.1)))),
       child: BottomNavigationBar(
         backgroundColor: Theme.of(context).cardColor,
         currentIndex: currentIndex,
         selectedLabelStyle: TextStyle(
-          fontFamily: 'Product Sans',
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.2
-        ),
+            fontFamily: 'Product Sans',
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.2),
         unselectedLabelStyle: TextStyle(
-          fontFamily: 'Product Sans',
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.2
-        ),
+            fontFamily: 'Product Sans',
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.2),
         iconSize: 22,
         selectedFontSize: 12,
         unselectedFontSize: 12,
         elevation: 8,
         selectedItemColor: Theme.of(context).accentColor,
         unselectedItemColor: Theme.of(context).iconTheme.color,
-        type: BottomNavigationBarType.fixed,
+        type: BottomNavigationBarType.shifting,
         onTap: (int index) => onItemTap(index),
         items: [
           BottomNavigationBarItem(
-            icon: Icon(EvaIcons.homeOutline),
-            label: Languages.of(context).labelHome
-          ),
-          if (enableYoutubeMusicScreen)
+              icon: Icon(EvaIcons.homeOutline),
+              label: Languages.of(context).labelHome),
+          BottomNavigationBarItem(icon: Icon(Icons.radio), label: "Radio"),
           BottomNavigationBarItem(
-            icon: Icon(Icons.radio),
-            label: "Radio"
-          ),
+              icon: Icon(EvaIcons.cloudDownloadOutline), label: "Downloads"),
           BottomNavigationBarItem(
-            icon: Icon(EvaIcons.cloudDownloadOutline),
-            label: "Downloads"
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(EvaIcons.headphonesOutline),
-            label: "Playlists"
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Other"
-          )
-        ]
+              icon: Icon(EvaIcons.headphonesOutline), label: "Playlists"),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Other")
+        ],
       ),
     );
   }

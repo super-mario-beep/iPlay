@@ -95,16 +95,16 @@ class _MainState extends State<Main> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ConfigurationProvider>(
-          create: (context) => ConfigurationProvider(preferences: widget.preloadedFs)
+            create: (context) => ConfigurationProvider(preferences: widget.preloadedFs)
         ),
         ChangeNotifierProvider<ManagerProvider>(
-          create: (context) => ManagerProvider()
+            create: (context) => ManagerProvider()
         ),
         ChangeNotifierProvider<DownloadsProvider>(
-          create: (context) => DownloadsProvider()
+            create: (context) => DownloadsProvider()
         ),
         ChangeNotifierProvider<MediaProvider>(
-          create: (context) => MediaProvider()
+            create: (context) => MediaProvider()
         ),
         ChangeNotifierProvider<PreferencesProvider>(
           create: (context) => PreferencesProvider(widget.prefs),
@@ -125,7 +125,7 @@ class _MainState extends State<Main> {
 
         List<Locale> supportedLocales = [];
         supportedLanguages.forEach((element) =>
-          supportedLocales.add(Locale(element.languageCode, '')));
+            supportedLocales.add(Locale(element.languageCode, '')));
 
         return MaterialApp(
           locale: _locale,
@@ -165,4 +165,3 @@ class _MainState extends State<Main> {
     );
   }
 }
-
