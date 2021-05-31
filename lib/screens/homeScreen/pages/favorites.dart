@@ -16,6 +16,7 @@ class HomePageFavorites extends StatelessWidget {
       child: prefs.favoriteVideos.isNotEmpty
         ? StreamsLargeThumbnailView(
             infoItems: prefs.favoriteVideos,
+            isFavorites: true,
             allowSaveToFavorites: false,
             allowSaveToWatchLater: true,
             onDelete: (infoItem) {

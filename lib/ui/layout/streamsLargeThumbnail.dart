@@ -38,13 +38,15 @@ class StreamsLargeThumbnailView extends StatefulWidget {
   final bool allowSaveToFavorites;
   final bool allowSaveToWatchLater;
   final Function onReachingListEnd;
+  final bool isFavorites;
   StreamsLargeThumbnailView({
     @required this.infoItems,
     this.shrinkWrap = false,
     this.onDelete,
     this.allowSaveToFavorites = true,
     this.allowSaveToWatchLater = true,
-    this.onReachingListEnd
+    this.onReachingListEnd,
+    this.isFavorites = false,
   });
 
   @override
@@ -60,7 +62,7 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
           double maxScroll = notification.metrics.maxScrollExtent;
           double currentScroll = notification.metrics.pixels;
           double delta = 200.0;
-          if ( maxScroll - currentScroll <= delta)
+          if (maxScroll - currentScroll <= delta && !widget.isFavorites)
             widget.onReachingListEnd();
           return false;
         },
