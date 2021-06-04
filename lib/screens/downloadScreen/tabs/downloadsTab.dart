@@ -38,6 +38,7 @@ class _DownloadsTabState extends State<DownloadsTab> {
       }
     }
 
+
     if(_list.length != list.length){
       print("Fixing download song list");
       mediaProvider.databaseSongs.clear();

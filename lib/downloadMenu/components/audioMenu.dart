@@ -94,10 +94,11 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu>
               scrollDirection: Axis.horizontal,
               shrinkWrap: true,
               itemBuilder: (BuildContext context, int index) {
-                return GestureDetector(
+                return index == 0 ?
+                 GestureDetector(
                   onTap: () {},
                   child: Container(
-                      width: 125,
+                      width: 220,
                       margin: EdgeInsets.all(12),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
@@ -185,7 +186,7 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu>
                           ),
                         ],
                       )),
-                );
+                ) :  Container();
               },
             ),
           ),

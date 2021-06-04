@@ -86,6 +86,7 @@ class _LibState extends State<Lib> {
         Lib.VERSION = packageInfo.version;
       });
     }
+
     WidgetsBinding.instance.addObserver(
       new LifecycleEventHandler(resumeCallBack: () async {
         setState(() {});
@@ -96,7 +97,7 @@ class _LibState extends State<Lib> {
           downloads.convertingList.isNotEmpty ||
           downloads.completedList.isNotEmpty
         ) {
-          if (prefs.showJoinTelegramDialog && prefs.remindTelegramLater == false) {
+          if (prefs.showJoinTelegramDialog && prefs.remindTelegramLater == false && false) {
             showModalBottomSheet(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -145,6 +146,8 @@ class _LibState extends State<Lib> {
     AudioService.currentMediaItemStream.listen((event) {
       setState(() {});
     });
+
+
   }
 
   void _showSheets() {
@@ -159,6 +162,24 @@ class _LibState extends State<Lib> {
       bottomSheets.add(DownloadFixSheet());
       config.showDownloadFixDialog = false;
     }
+
+
+    PreferencesProvider prefs = Provider.of<PreferencesProvider>(context,listen: false);
+    if(prefs.showJoinTelegramDialog && prefs.watchHistory.length >= 7){
+      showModalBottomSheet(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(15),
+                  topRight: Radius.circular(15)
+              )
+          ),
+          context: context,
+          builder: (_) => Wrap(children: [
+            JoinTelegramSheet()
+          ])
+      );
+    }
+
     // Show our Sheets if there is any
     if (bottomSheets.isNotEmpty) {
       showModalBottomSheet(
@@ -417,3 +438,4 @@ class _LibState extends State<Lib> {
   }
 
 }
+

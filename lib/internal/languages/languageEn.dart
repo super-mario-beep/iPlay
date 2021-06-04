@@ -298,12 +298,7 @@ class LanguageEn extends Languages {
   String get labelJoinTelegramChannel => "Join Telegram Channel!";
   @override
   String get labelJoinTelegramJustification =>
-    "Do you like SongTube? Please join the Telegram Channel! You will find " +
-    "Updates, Information, Development, Group Link and other Social links." +
-    "\n\n" +
-    "In case you have an issue or a great recommentation in your mind, " +
-    "please join the Group from the Channel and write it down! But take in mind " +
-    "you can only speak in English, thanks!";
+    "Your opinion matters to us! We work super hard to make iPlay better for you, and  would love to know\n\n Would you like to rate this app?";
   @override
   String get labelRemindLater => "Remind Later";
 

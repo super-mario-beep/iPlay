@@ -9,48 +9,35 @@ import 'package:url_launcher/url_launcher.dart';
 class JoinTelegramSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    PreferencesProvider prefs = Provider.of<PreferencesProvider>(context, listen: false);
+    PreferencesProvider prefs =
+        Provider.of<PreferencesProvider>(context, listen: false);
     return StyledBottomSheet(
-      actionsPadding: EdgeInsets.only(
-        right: 24, left: 24, bottom: 12
-      ),
+      actionsPadding: EdgeInsets.only(right: 24, left: 24, bottom: 12),
       addBottomPadding: true,
-      leading: Icon(MdiIcons.telegram, color: Colors.blue),
-      title: Languages.of(context).labelJoinTelegramChannel,
+      leading: Icon(
+        Icons.star,
+        size: 22,
+        color: Colors.yellowAccent,
+      ),
+      title: "Rate us",
       content: Text(
         Languages.of(context).labelJoinTelegramJustification,
         style: TextStyle(
-          color: Theme.of(context).textTheme.bodyText1.color,
-          fontSize: 16
-        ),
+            color: Theme.of(context).textTheme.bodyText1.color, fontSize: 16),
       ),
       actions: [
         TextButton(
-          child: Text(Languages.of(context).labelJoin,
-            style: TextStyle(
-              fontWeight: FontWeight.w600
-            )),
+          child: Text("Yes",
+              style: TextStyle(fontWeight: FontWeight.w600,color: Theme.of(context).accentColor)),
           onPressed: () {
             prefs.showJoinTelegramDialog = false;
-            launch("https://t.me/songtubechannel");
+            launch("https://play.google.com/store/apps/details?id=com.neoblast.android.iplay");
             Navigator.pop(context);
           },
         ),
         TextButton(
-          child: Text(Languages.of(context).labelRemindLater,
-            style: TextStyle(
-              fontWeight: FontWeight.w600
-            )),
-          onPressed: () {
-            prefs.remindTelegramLater = true;
-            Navigator.pop(context);
-          },
-        ),
-        TextButton(
-          child: Text(Languages.of(context).labelNo,
-            style: TextStyle(
-              fontWeight: FontWeight.w600
-            )),
+          child: Text("Later",
+              style: TextStyle(fontWeight: FontWeight.w600, color: Theme.of(context).accentColor)),
           onPressed: () {
             prefs.showJoinTelegramDialog = false;
             Navigator.pop(context);

@@ -110,13 +110,13 @@ class PreferencesProvider extends ChangeNotifier {
 
   // Join Telegram Dialog
   bool get showJoinTelegramDialog {
-    return false;
+    return prefs.getBool('joinTelegramDialog') ?? false;
   }
   set showJoinTelegramDialog(bool value) {
     prefs.setBool('joinTelegramDialog', value);
   }
   // Remind Later
-  bool remindTelegramLater = false;
+  bool remindTelegramLater = true;
 
   // Enable/Disable App's BlurUI
   bool get enableBlurUI {

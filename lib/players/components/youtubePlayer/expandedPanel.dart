@@ -89,7 +89,10 @@ class _YoutubePlayerVideoPageState extends State<YoutubePlayerVideoPage>
             pageProvider.currentRelatedVideos[currentIndex + 1];
       }
     } else {
-      pageProvider.infoItem = pageProvider.currentRelatedVideos[0];
+      //pageProvider.currentRelatedVideos[0].getVideo.then((value) => {
+        pageProvider.infoItem = pageProvider.currentRelatedVideos[0];
+      //});
+
     }
   }
 
@@ -143,6 +146,8 @@ class _YoutubePlayerVideoPageState extends State<YoutubePlayerVideoPage>
           if (prefs.youtubeAutoPlay) {
             if (mounted) executeAutoPlay();
           }
+        } else {
+          prefs.youtubeAutoPlay = false;
         }
       },
       onFullscreenTap: () {
@@ -773,27 +778,35 @@ class _YoutubePlayerVideoPageState extends State<YoutubePlayerVideoPage>
           trailing: GestureDetector(
             onTap: () async {
               print("RELOADING VIDEO " + infoItem.name);
-              VideoPageProvider pageProvider = Provider.of<VideoPageProvider>(context, listen: false);
+              VideoPageProvider pageProvider =
+                  Provider.of<VideoPageProvider>(context, listen: false);
               pageProvider.closeVideoPanel();
-
-              if (infoItem is StreamInfoItem || infoItem is PlaylistInfoItem) {
-                pageProvider.infoItem = infoItem;
-              } else {
-                Navigator.push(
-                  context,
-                  BlurPageRoute(
-                    blurStrength:
-                        Provider.of<PreferencesProvider>(context, listen: false)
-                                .enableBlurUI
-                            ? 20
-                            : 0,
-                    builder: (_) => YoutubeChannelPage(
-                      url: infoItem.url,
-                      name: infoItem.name,
-                    ),
-                  ),
-                );
-              }
+              infoItem.getVideo.then((value) => {
+                    //pageProvider.currentVideo = value,
+                    if (infoItem is StreamInfoItem ||
+                        infoItem is PlaylistInfoItem)
+                      {
+                        pageProvider.infoItem = infoItem,
+                      }
+                    else
+                      {
+                        Navigator.push(
+                          context,
+                          BlurPageRoute(
+                            blurStrength: Provider.of<PreferencesProvider>(
+                                        context,
+                                        listen: false)
+                                    .enableBlurUI
+                                ? 20
+                                : 0,
+                            builder: (_) => YoutubeChannelPage(
+                              url: infoItem.url,
+                              name: infoItem.name,
+                            ),
+                          ),
+                        ),
+                      }
+                  });
             },
             child: Container(
               decoration: BoxDecoration(

@@ -22,6 +22,8 @@ class AddStreamToPlaylistSheet extends StatefulWidget {
 
 class _AddStreamToPlaylistSheetState extends State<AddStreamToPlaylistSheet>
     with TickerProviderStateMixin {
+
+
   @override
   Widget build(BuildContext context) {
     PreferencesProvider prefs = Provider.of<PreferencesProvider>(context);
@@ -216,6 +218,33 @@ class _AddStreamToPlaylistSheetState extends State<AddStreamToPlaylistSheet>
                             songs.add(widget.stream.name);
                             prefs.setSongsForPlaylist(playlist, songs);
                           } else {
+                            showModalBottomSheet<dynamic>(
+                                isScrollControlled: true,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(30),
+                                      topRight: Radius.circular(30)
+                                  ),
+                                ),
+                                clipBehavior: Clip.antiAlias,
+                                context: context,
+                                builder: (context) {
+                                  String url = widget.stream.url;
+                                  return Wrap(
+                                    children: [
+                                      Consumer<ManagerProvider>(
+                                          builder: (context, provider, _) {
+                                            return DownloadMenu(
+                                              videoUrl: url,
+                                              scaffoldState: provider
+                                                  .internalScaffoldKey.currentState,
+                                            );
+                                          }
+                                      ),
+                                    ],
+                                  );
+                                }
+                            );
                             /*showModalBottomSheet<dynamic>(
                                 isScrollControlled: true,
                                 shape: RoundedRectangleBorder(
@@ -283,9 +312,9 @@ class _AddStreamToPlaylistSheetState extends State<AddStreamToPlaylistSheet>
               },
             ),
           ),
-        Container(
+        /*Container(
             height: MediaQuery.of(context).padding.bottom,
-            color: Theme.of(context).cardColor)
+            color: Theme.of(context).cardColor)*/
       ],
     );
   }

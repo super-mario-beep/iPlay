@@ -3,9 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:newpipeextractor_dart/models/infoItems/video.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/downloadMenu/downloadMenu.dart';
 import 'package:songtube/internal/languages.dart';
 import 'package:songtube/internal/models/playlist.dart';
 import 'package:songtube/lib.dart';
+import 'package:songtube/provider/managerProvider.dart';
 import 'package:songtube/provider/mediaProvider.dart';
 import 'package:songtube/provider/preferencesProvider.dart';
 
@@ -180,7 +182,7 @@ class _AddStreamToPlaylistSheetStateDl extends State<AddStreamToPlaylistSheetDl>
                           songs.add(widget.stream);
                           prefs.setSongsForPlaylist(playlist, songs);
                         }else{
-                          //Download & Add
+                          //wont happend
                         }
                         setState(() {
                           _AddStreamToPlaylistSheetStateDl createState() =>

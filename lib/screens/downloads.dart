@@ -20,8 +20,11 @@ import 'package:songtube/screens/downloadScreen/tabs/downloadsTab.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:songtube/screens/downloadScreen/tabs/queueTab.dart';
 import 'package:songtube/ui/components/autoHideScaffold.dart';
+import 'package:songtube/ui/sheets/joinTelegram.dart';
 
 class DownloadTab extends StatelessWidget {
+
+
   @override
   Widget build(BuildContext context) {
     DownloadsProvider downloadsProvider =
@@ -53,6 +56,7 @@ class DownloadTab extends StatelessWidget {
         downloadedMediaInPlaylist.add(media);
       }
     }
+
 
     Duration duration = downloadedMediaInPlaylist.fold(
         Duration(milliseconds: 0),
