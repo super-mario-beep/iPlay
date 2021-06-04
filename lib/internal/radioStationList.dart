@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/radioStreamingController.dart';
+import 'package:songtube/provider/managerProvider.dart';
 import 'package:songtube/provider/preferencesProvider.dart';
 import 'dart:async';
 
@@ -72,6 +73,8 @@ class _RadioStationList extends State<RadioStationList> {
   List<RadioStation> stations = [];
   bool loading = true;
   var streamingController = StreamingController();
+  bool search = false;
+  String query = "";
 
   Future preLoadRadio(RadioStation station) {
     _loadingAlert(3);
@@ -130,6 +133,17 @@ class _RadioStationList extends State<RadioStationList> {
     }
   }
 
+  List<RadioStation> getStationsForQuery(String query){
+    List<RadioStation> list = [];
+    if(query == "") return list;
+    for(RadioStation radioStation in stations){
+      if(radioStation.name.toLowerCase().contains(query.toLowerCase())){
+        list.add(radioStation);
+      }
+    }
+    return list;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -141,32 +155,131 @@ class _RadioStationList extends State<RadioStationList> {
 
     PreferencesProvider prefs = Provider.of<PreferencesProvider>(context);
     List<RadioStation> favorites = prefs.favoriteRadios;
+    ManagerProvider manager = Provider.of<ManagerProvider>(context);
+    List<RadioStation> queryStations = getStationsForQuery(query);
 
 
     return DefaultTabController(
       initialIndex: 0,
       length: 3,
       child: Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          titleSpacing: 0,
-          backgroundColor: Theme.of(context).cardColor,
-          title: Text(
-            "Radio list",
-            style: TextStyle(
-                fontFamily: 'Product Sans',
-                fontWeight: FontWeight.w700,
-                fontSize: 20,
-                color: Theme.of(context).textTheme.bodyText1.color),
-          ),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back_rounded),
-            color: Theme.of(context).iconTheme.color,
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
+        appBar: !search
+            ? AppBar(
+                elevation: 0,
+                titleSpacing: 0,
+                backgroundColor: Theme.of(context).cardColor,
+                title: Text(
+                  "Radio list",
+                  style: TextStyle(
+                      fontFamily: 'Product Sans',
+                      fontWeight: FontWeight.w700,
+                      fontSize: 20,
+                      color: Theme.of(context).textTheme.bodyText1.color),
+                ),
+                leading: IconButton(
+                  icon: Icon(Icons.arrow_back_rounded),
+                  color: Theme.of(context).accentColor,
+                  onPressed: () => Navigator.pop(context),
+                ),
+                actions: [
+                  Padding(
+                    padding: EdgeInsets.only(right: 12),
+                    child: IconButton(
+                        icon: Icon(Icons.search,
+                            color: Theme.of(context).iconTheme.color),
+                        onPressed: () async {
+                          setState(() {
+                            search = true;
+
+                          });
+                        }),
+                  ),
+                ],
+              )
+            : AppBar(
+                elevation: 0,
+                titleSpacing: 0,
+                backgroundColor: Theme.of(context).cardColor,
+                leading: IconButton(
+                  icon: Icon(Icons.arrow_back_rounded),
+                  color: Theme.of(context).accentColor,
+                  onPressed: () => Navigator.pop(context),
+                ),
+                actions: [
+                  Padding(
+                    padding: EdgeInsets.only(right: 12),
+                    child: IconButton(
+                        icon: Icon(Icons.clear,
+                            color: Theme.of(context).iconTheme.color),
+                        onPressed: () async {
+                          setState(() {
+                            query = "";
+                            manager.searchController.clear();
+                          });
+                        }),
+                  ),
+                ],
+                title: Container(
+                  margin: EdgeInsets.only(left: 5),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Stack(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(left: 12, right: 12),
+                              child: TextFormField(
+                                autofocus: true,
+                                controller: manager.searchController,
+                                focusNode: manager.searchBarFocusNode,
+                                onTap: () =>
+                                    {manager.searchBarFocusNode.requestFocus()},
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1
+                                        .color
+                                        .withOpacity(0.6),
+                                    fontSize: 14),
+                                decoration: InputDecoration(
+                                  hintText: "Enter radio name",
+                                  hintStyle: TextStyle(
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodyText1
+                                        .color
+                                        .withOpacity(0.6),
+                                  ),
+                                  border: UnderlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    borderSide: BorderSide(
+                                      width: 0,
+                                      style: BorderStyle.none,
+                                    ),
+                                  ),
+                                ),
+                                onFieldSubmitted: (String query) {
+
+                                },
+                                onChanged: (_) {
+                                  print(manager.searchController.text);
+                                  manager.setState();
+                                  setState(() {
+                                    query = manager.searchController.text;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
         body: Column(
           children: [
+            query == "" ?
             Expanded(
               child: stations.isNotEmpty && !loading
                   ? ListView.builder(
@@ -205,13 +318,13 @@ class _RadioStationList extends State<RadioStationList> {
                             trailing: FlexiblePopupMenu(
                                 borderRadius: 10,
                                 items: [
-                                  !_containFavoriteRadio(favorites, station) ?
-                                  FlexiblePopupItem(
-                                      title: "Add to favorites",
-                                      value: "Add") :
-                                  FlexiblePopupItem(
-                                      title: "Remove from favorites",
-                                      value: "Remove")
+                                  !_containFavoriteRadio(favorites, station)
+                                      ? FlexiblePopupItem(
+                                          title: "Add to favorites",
+                                          value: "Add")
+                                      : FlexiblePopupItem(
+                                          title: "Remove from favorites",
+                                          value: "Remove")
                                 ],
                                 onItemTap: (String value) async {
                                   if (value != null) {
@@ -342,15 +455,192 @@ class _RadioStationList extends State<RadioStationList> {
                             ),
                           ),
                         ),
-            )
+            ) :
+            Expanded(
+              child: queryStations.isNotEmpty && !loading
+                  ? ListView.builder(
+                  padding: EdgeInsets.only(left: 16, top: 10, bottom: 10),
+                  shrinkWrap: true,
+                  itemCount: queryStations.length,
+                  itemBuilder: (context, index) {
+                    RadioStation station = queryStations[index];
+                    return ListTile(
+                        title: Text(
+                          station.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.fade,
+                          softWrap: false,
+                          style: TextStyle(
+                            color:
+                            Theme.of(context).textTheme.bodyText1.color,
+                          ),
+                        ),
+                        subtitle: Text(
+                          "Bitrate " +
+                              station.bitrate.toString() +
+                              " - " +
+                              station.country,
+                          maxLines: 1,
+                          overflow: TextOverflow.fade,
+                          softWrap: false,
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyText1
+                                  .color
+                                  .withOpacity(0.6)),
+                        ),
+                        trailing: FlexiblePopupMenu(
+                            borderRadius: 10,
+                            items: [
+                              !_containFavoriteRadio(favorites, station)
+                                  ? FlexiblePopupItem(
+                                  title: "Add to favorites",
+                                  value: "Add")
+                                  : FlexiblePopupItem(
+                                  title: "Remove from favorites",
+                                  value: "Remove")
+                            ],
+                            onItemTap: (String value) async {
+                              if (value != null) {
+                                switch (value) {
+                                  case "Add":
+                                    favorites.add(station);
+                                    prefs.favoriteRadios = favorites;
+                                    break;
+                                  case "Remove":
+                                    favorites.remove(station);
+                                    prefs.favoriteRadios = favorites;
+                                    break;
+                                }
+                              }
+                            },
+                            child: Container(
+                              color: Colors.transparent,
+                              padding: EdgeInsets.all(4),
+                              child: Icon(Icons.more_vert, size: 18),
+                            )),
+                        onTap: () async {
+                          changeStreamStation(station);
+                        });
+                  })
+                  : !loading
+                  ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          "We couldn't find any radio stations",
+                          //"Discover new Channels to start building your feed!",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Theme.of(context)
+                                  .iconTheme
+                                  .color
+                                  .withOpacity(0.6),
+                              fontSize: 22,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: 'Product Sans'),
+                        ),
+                        SizedBox(height: 16),
+                        GestureDetector(
+                          onTap: () async {},
+                          child: Container(
+                            height: 50,
+                            width: 50,
+                            margin:
+                            EdgeInsets.only(left: 8, right: 8),
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                BorderRadius.circular(100),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Theme.of(context)
+                                          .accentColor
+                                          .withOpacity(0.2),
+                                      blurRadius: 12,
+                                      spreadRadius: 0.2)
+                                ],
+                                border: Border.all(
+                                    color: Theme.of(context)
+                                        .accentColor),
+                                color: Theme.of(context).cardColor),
+                            child: Center(
+                              child: Icon(Icons.radio,
+                                  color:
+                                  Theme.of(context).accentColor),
+                            ),
+                          ),
+                        ),
+                      ]),
+                ),
+              )
+                  : Center(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Loading...",
+                        //"Discover new Channels to start building your feed!",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Theme.of(context)
+                                .iconTheme
+                                .color
+                                .withOpacity(0.6),
+                            fontSize: 22,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Product Sans'),
+                      ),
+                      SizedBox(height: 16),
+                      GestureDetector(
+                        onTap: () async {},
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          margin: EdgeInsets.only(left: 8, right: 8),
+                          decoration: BoxDecoration(
+                              borderRadius:
+                              BorderRadius.circular(100),
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Theme.of(context)
+                                        .accentColor
+                                        .withOpacity(0.2),
+                                    blurRadius: 12,
+                                    spreadRadius: 0.2)
+                              ],
+                              border: Border.all(
+                                  color:
+                                  Theme.of(context).accentColor),
+                              color: Theme.of(context).cardColor),
+                          child: Center(
+                            child: Icon(Icons.radio,
+                                color: Theme.of(context).accentColor),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
-  _containFavoriteRadio(List<RadioStation> list, RadioStation station){
-    for(RadioStation r in list){
-      if(r.name == station.name){
+
+  _containFavoriteRadio(List<RadioStation> list, RadioStation station) {
+    for (RadioStation r in list) {
+      if (r.name == station.name) {
         return true;
       }
     }

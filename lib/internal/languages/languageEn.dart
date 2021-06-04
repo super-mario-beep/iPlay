@@ -140,8 +140,8 @@ class LanguageEn extends Languages {
   @override
   String get labelNoMediaYet => "No Media Yet";
   @override
-  String get labelNoMediaYetJustification => "All your Media" +
-    "will be shown here";
+  String get labelNoMediaYetJustification => "All your media" +
+    " will be shown here";
   @override
   String get labelSearchMedia => "Search Media...";
   @override
@@ -250,10 +250,10 @@ class LanguageEn extends Languages {
 
   // Android 10 or 11 Detected Dialog
   @override
-  String get labelAndroid11Detected => "Android 10 or 11 Detected";
+  String get labelAndroid11Detected => "Android 11 Detected";
   @override
   String get labelAndroid11DetectedJustification => "To ensure the correct " +
-    "functioning of this app Downloads, on Android 10 and 11, access to all " +
+    "functioning of this app Downloads, on Android 11, access to all " +
     "Files permission might be needed, this will be temporal and not required " +
     "on future updates. You can also apply this fix in Settings.";
 

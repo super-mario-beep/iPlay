@@ -8,6 +8,8 @@ class LifecycleEventHandler extends WidgetsBindingObserver {
   final AsyncCallback resumeCallBack;
   final AsyncCallback suspendingCallBack;
 
+  static bool isAppActive = true;
+
   LifecycleEventHandler({
     this.resumeCallBack,
     this.suspendingCallBack
@@ -17,6 +19,7 @@ class LifecycleEventHandler extends WidgetsBindingObserver {
   Future<Null> didChangeAppLifecycleState(AppLifecycleState state) async {
     switch (state) {
       case AppLifecycleState.resumed:
+        isAppActive = true;
         if (resumeCallBack != null) {
           await resumeCallBack();
         }
@@ -24,6 +27,7 @@ class LifecycleEventHandler extends WidgetsBindingObserver {
       case AppLifecycleState.inactive:
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
+        isAppActive = false;
         if (suspendingCallBack != null) {
           await suspendingCallBack();
         }

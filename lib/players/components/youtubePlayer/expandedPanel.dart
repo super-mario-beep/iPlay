@@ -18,6 +18,7 @@ import 'package:songtube/internal/languages.dart';
 import 'package:songtube/internal/musicBrainzApi.dart';
 import 'package:songtube/internal/radioStreamingController.dart';
 import 'package:songtube/lib.dart';
+import 'package:songtube/pages/channel.dart';
 import 'package:songtube/players/components/youtubePlayer/ui/comments.dart';
 import 'package:songtube/players/components/youtubePlayer/videoPlayer.dart';
 import 'package:songtube/players/service/playerService.dart';
@@ -34,6 +35,7 @@ import 'package:songtube/ui/components/addToPlaylist.dart';
 import 'package:songtube/ui/components/measureSize.dart';
 import 'package:songtube/ui/components/tagsResultsPage.dart';
 import 'package:songtube/ui/dialogs/loadingDialog.dart';
+import 'package:songtube/ui/internal/lifecycleEvents.dart' as lifeCycle;
 import 'package:songtube/ui/internal/snackbar.dart';
 import 'package:flutter_screen/flutter_screen.dart';
 import 'package:songtube/ui/layout/streamsListTile.dart';
@@ -134,8 +136,13 @@ class _YoutubePlayerVideoPageState extends State<YoutubePlayerVideoPage>
           ? true
           : false,
       onVideoEnded: () async {
-        if (prefs.youtubeAutoPlay) {
-          if (mounted) executeAutoPlay();
+        print("VIDEO ENDED");
+        print("Is in app?: " +
+            lifeCycle.LifecycleEventHandler.isAppActive.toString());
+        if (lifeCycle.LifecycleEventHandler.isAppActive) {
+          if (prefs.youtubeAutoPlay) {
+            if (mounted) executeAutoPlay();
+          }
         }
       },
       onFullscreenTap: () {
@@ -323,7 +330,6 @@ class _YoutubePlayerVideoPageState extends State<YoutubePlayerVideoPage>
                             ),
                           ),*/
                         SizedBox(height: 4),
-                        SizedBox(height: 8),
                         // AutoPlay Widget
                         _autoPlayWidget(),
                         // Related Videos
@@ -695,7 +701,8 @@ class _YoutubePlayerVideoPageState extends State<YoutubePlayerVideoPage>
                 GestureDetector(
                   onTap: () async {
                     try {
-                      print("Playing music while radio is on: " + StreamingController.IS_PLAYING.toString());
+                      print("Playing music while radio is on: " +
+                          StreamingController.IS_PLAYING.toString());
                       if (StreamingController.IS_PLAYING) {
                         var streamingController = StreamingController();
                         StreamingController.IS_PLAYING = false;
@@ -719,16 +726,10 @@ class _YoutubePlayerVideoPageState extends State<YoutubePlayerVideoPage>
                     if (listEquals(list, AudioService.queue) == false) {
                       await AudioService.updateQueue(list);
                     }
-                    print(item.artist + "mario");
-                    VideoPageProvider tmp = Provider.of<VideoPageProvider>(context, listen: false);
-                    await AudioService.playMediaItem(item).then((value) => {
-                      tmp.closeVideoPanel()
-                    });
-
-
-
-
-
+                    VideoPageProvider tmp =
+                        Provider.of<VideoPageProvider>(context, listen: false);
+                    await AudioService.playMediaItem(item)
+                        .then((value) => {tmp.closeVideoPanel()});
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -756,7 +757,64 @@ class _YoutubePlayerVideoPageState extends State<YoutubePlayerVideoPage>
         );
       }
     }
-    return Container();
+    return Column(
+      children: [
+        ListTile(
+          isThreeLine: false,
+          subtitle: Text(
+              "Are you experiencing troubles with playing this video? This will reload the video and complete video player.",
+              style: TextStyle(fontSize: 12)),
+          title: Text(
+            "Reload video",
+            style: TextStyle(
+                color: Theme.of(context).textTheme.bodyText1.color,
+                fontWeight: FontWeight.w500),
+          ),
+          trailing: GestureDetector(
+            onTap: () async {
+              print("RELOADING VIDEO " + infoItem.name);
+              VideoPageProvider pageProvider = Provider.of<VideoPageProvider>(context, listen: false);
+              pageProvider.closeVideoPanel();
+
+              if (infoItem is StreamInfoItem || infoItem is PlaylistInfoItem) {
+                pageProvider.infoItem = infoItem;
+              } else {
+                Navigator.push(
+                  context,
+                  BlurPageRoute(
+                    blurStrength:
+                        Provider.of<PreferencesProvider>(context, listen: false)
+                                .enableBlurUI
+                            ? 20
+                            : 0,
+                    builder: (_) => YoutubeChannelPage(
+                      url: infoItem.url,
+                      name: infoItem.name,
+                    ),
+                  ),
+                );
+              }
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: Theme.of(context).scaffoldBackgroundColor),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(Icons.refresh,
+                    color: Theme.of(context).iconTheme.color, size: 24),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(
+          height: 5,
+        ),
+        Divider(
+          height: 1,
+        ),
+      ],
+    );
   }
 
   Widget _videoLoading(String thumbnailUrl) {

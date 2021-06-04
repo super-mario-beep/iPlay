@@ -28,15 +28,6 @@ class DownloadFixSheet extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        TextButton(
-          child: Text(
-            "Not Now",
-            style: TextStyle(
-              color: Theme.of(context).accentColor
-            ),
-          ),
-          onPressed: () => Navigator.pop(context)
-        )
       ],
     );
   }

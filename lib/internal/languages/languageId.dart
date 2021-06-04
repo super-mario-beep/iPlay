@@ -210,7 +210,7 @@ class LanguageId extends Languages {
   String get labelAndroid11Fix => "Perbaikan Android 11";
   @override
   String get labelAndroid11FixJustification => "Perbaikan Masalah unduhan di " +
-    "Android 10 & 11";
+    "Android 11";
   @override
   String get labelBackup => "Cadangan";
   @override
