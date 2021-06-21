@@ -382,5 +382,14 @@ class PreferencesProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  //Hide NavigationBar on scroll
+  bool get hideNavigationBar{
+    return prefs.getBool('hideNavigationBar') ?? true;
+  }
+  set hideNavigationBar(bool value){
+    prefs.setBool('hideNavigationBar', value);
+    notifyListeners();
+  }
+
 
 }

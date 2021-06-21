@@ -128,6 +128,20 @@ class _ThemeSettingsState extends State<ThemeSettings> with TickerProviderStateM
             onChanged: (bool value) {
               prefs.enableBlurUI = value;
             }
+        ),
+        SwitchListTile(
+            title: Text(
+              "Hide while scrolling",
+              style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyText1.color,
+                  fontWeight: FontWeight.w500
+              ),
+            ),
+            subtitle: Text("Enable/Disable your navigation panel disappear while scrolling"),
+            value: prefs.hideNavigationBar,
+            onChanged: (bool value) {
+              prefs.hideNavigationBar = value;
+            }
         )
       ],
     );

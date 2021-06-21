@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
+import 'package:provider/provider.dart';
+import 'package:songtube/provider/preferencesProvider.dart';
 import 'package:songtube/ui/internal/scrollDetector.dart';
 
 enum FloatingWidgetState{
@@ -152,6 +154,7 @@ class _FancyScaffoldState extends State<FancyScaffold> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    PreferencesProvider prefs = Provider.of<PreferencesProvider>(context);
     widget.floatingWidgetController?._addState(this);
     return AnimatedBuilder(
       animation: _floatingWidgetAnimationController,
@@ -223,12 +226,16 @@ class _FancyScaffoldState extends State<FancyScaffold> with TickerProviderStateM
           },
           child: ScrollDetector(
             onScrollDown: () {
-              _navigationBarAnimationController.reverse();
-              navigationBarScrolledDown = true;
+              if(prefs.hideNavigationBar) {
+                _navigationBarAnimationController.reverse();
+                navigationBarScrolledDown = true;
+              }
             },
             onScrollUp: () {
-              _navigationBarAnimationController.forward();
-              navigationBarScrolledDown = false;
+              if(prefs.hideNavigationBar) {
+                _navigationBarAnimationController.forward();
+                navigationBarScrolledDown = false;
+              }
             },
             child: mainChild
           ),
