@@ -189,7 +189,7 @@ class _HomePageAppBarState extends State<HomePageAppBar>
             Padding(
               padding: const EdgeInsets.all(10),
               child: Image.asset(
-                DateTime.now().month == 12
+                DateTime.now().month == 17
                     ? 'assets/images/logo_christmas.png'
                     : 'assets/images/ic_launcher.png',
                 fit: BoxFit.cover,
