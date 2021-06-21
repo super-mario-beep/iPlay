@@ -46,12 +46,13 @@ class _DownloadsTabState extends State<DownloadsTab> {
     }
 
 
+
     return MediaListBase(
       isLoading: mediaProvider.loadingDownloads,
       isEmpty: mediaProvider.databaseSongs.isEmpty,
       listType: MediaListBaseType.Downloads,
       child: SongsListView(
-        songs: mediaProvider.databaseSongs,
+        songs: _list.reversed.toList(),
         hasDownloadType: true,
       ),
     );
