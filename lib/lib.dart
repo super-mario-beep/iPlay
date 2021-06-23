@@ -53,8 +53,20 @@ class Lib extends StatefulWidget {
   static final bool HAS_ADS = false;
   static String VERSION = "";
 
+
+  static Future<bool> checkForUpdatesStatic() async{
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      final response = await http.get('http://neoblast-official.com/flutter/iPlay/get_downloading_available.php?version='+ packageInfo.buildNumber);
+      var json = jsonDecode(response.body);
+      print("Has new update: " + json.toString());
+      int downloadable = json["downloadable"];
+      Lib.DOWNLOADING_ENABLED = downloadable == 1 ? true : false;
+      return true;
+  }
+
   @override
   _LibState createState() => _LibState();
+
 }
 
 class _LibState extends State<Lib> {

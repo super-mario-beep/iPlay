@@ -229,7 +229,14 @@ class StreamManifestPlayerState extends State<StreamManifestPlayer> {
     });
   }
 
+  bool showUI = true;
   void showControlsHandler() {
+    setState(() {
+      showUI = !showUI;
+    });
+    return;
+
+
     if (!showControls) {
       tapId = Random().nextInt(10);
       int currentId = tapId;
@@ -433,7 +440,7 @@ class StreamManifestPlayerState extends State<StreamManifestPlayer> {
             ),
             AnimatedSwitcher(
               duration: Duration(milliseconds: 600),
-              child: showControls ? Container(
+              child: showUI ? Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
                 child: Stack(
