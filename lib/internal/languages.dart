@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:songtube/internal/languages/languageAr.dart';
+import 'package:songtube/internal/languages/languageHr.dart';
 import 'package:songtube/internal/languages/languageRu.dart';
 import 'package:songtube/main.dart';
 
@@ -26,27 +27,27 @@ final supportedLanguages = <LanguageData>[
   // English (US)
   LanguageData("🇺🇸", "English", 'en'),
   // Spanish (VE)
-  /*LanguageData("ve", "Español", "es"),
+  //LanguageData("ve", "Español", "es"),
   // Portuguese (BR)
-  LanguageData("🇧🇷", "Português", "pt"),
+  //LanguageData("🇧🇷", "Português", "pt"),
   // Igbo (NG)
-  LanguageData("ng", "Igbo", "ig"),
+  //LanguageData("ng", "Igbo", "ig"),
   // Indonesia (ID)
-  LanguageData("🇮🇩", "Indonesia", "id"),
+  //LanguageData("🇮🇩", "Indonesia", "id"),
   // Turkish (TR)
-  LanguageData("tr", "Turkey", "tr"),
+  //LanguageData("tr", "Turkey", "tr"),
   // Russian (RU)
-  LanguageData("ru", "Russian", "ru"),
+  //LanguageData("ru", "Russian", "ru"),
   // Somali (SO, ET, DJI, KEN)
-  LanguageData("🇸🇴" "🇪🇹" "🇩🇯" "🇰🇪", "Soomaali", "so"),
+  //LanguageData("🇸🇴" "🇪🇹" "🇩🇯" "🇰🇪", "Soomaali", "so"),
   // Arabic (AR)
-  LanguageData("ar", "Arabic", "ar"),*/
+  //LanguageData("ar", "Arabic", "ar"),
+  //LanguageData("hr", "Croatian", "hr")
 ];
 
 final supportedTabs = <LanguageData>[
-  LanguageData("tr", "Trending", 'tr'),
-  LanguageData("fa", "Favorites", 'fa'),
-  LanguageData("pl", "Playlist", 'pl')
+  LanguageData("pl", "Audio playlist", 'pl'),
+  LanguageData("fa", "Video playlist", 'fa'),
 ];
 
 
@@ -56,29 +57,31 @@ Future<Languages> _loadLocale(Locale locale) async {
     case 'en':
       return LanguageEn();
     // Spanish (VE)
-    case 'es':
-      return LanguageEs();
+    //case 'es':
+      //return LanguageEs();
     // Portuguese (BR)
-    case 'pt':
-      return LanguagePtBr();
+    //case 'pt':
+      //return LanguagePtBr();
     // Igbo (NG)
-    case 'ig':
-      return LanguageIgbo();
+    //case 'ig':
+      //return LanguageIgbo();
     // Indonesia (ID)
-    case 'id':
-      return LanguageId();
+    //case 'id':
+      //return LanguageId();
     // Turkish (TR)
-    case 'tr':
-      return LanguageTr();
+    //case 'tr':
+      //return LanguageTr();
     // Russian (RU)
-    case 'ru':
-      return LanguageRu();
+    //case 'ru':
+      //return LanguageRu();
     // Somali (SO, ET, DJI, KEN)
-    case 'so':
-      return LanguageSo();
+    //case 'so':
+      //return LanguageSo();
     // Arabic (AR)
-    case 'ar':
-      return LanguageAr();
+    //case 'ar':
+      //return LanguageAr();
+    //case 'hr':
+      //return LanguageHr();
     // Default Language (English)
     default:
       return LanguageEn();

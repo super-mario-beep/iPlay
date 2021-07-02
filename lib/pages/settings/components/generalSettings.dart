@@ -3,6 +3,11 @@ import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/languages.dart';
+import 'package:songtube/internal/languages/languageAr.dart';
+import 'package:songtube/internal/languages/languageEs.dart';
+import 'package:songtube/internal/languages/languagePt-BR.dart';
+import 'package:songtube/internal/languages/languageRu.dart';
+import 'package:songtube/internal/languages/languageTr.dart';
 import 'package:songtube/internal/nativeMethods.dart';
 import 'package:songtube/provider/preferencesProvider.dart';
 
@@ -13,14 +18,23 @@ class GeneralSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     PreferencesProvider prefs = Provider.of<PreferencesProvider>(context);
     int val = prefs.homeTab;
-    String currentHomeTab = "Trending";
+    String currentHomeTab = "Audio playlist";
     if(val == 1){
-      currentHomeTab = "Favorites";
-    }else if(val == 2){
-      currentHomeTab = "Playlist";
+      currentHomeTab = "Video playlist";
     }
 
+
     String currentLang = "English";
+    Languages language = Languages.of(context);
+    if(language is LanguageEs){
+      currentLang = "Español";
+    }else if(language is LanguagePtBr){
+      currentLang = "Português";
+    }else if(language is LanguageTr){
+      currentLang = "Turkey";
+    }else if(language is LanguageRu){
+      currentLang = "Russian";
+    }
 
 
     return ListView(
@@ -82,12 +96,10 @@ class GeneralSettings extends StatelessWidget {
               iconSize: 30,
               onChanged: (LanguageData language) {
                 String value = language.name;
-                if(value == "Trending"){
+                if(value == "Audio playlist"){
                   prefs.homeTab = 0;
-                }else if(value == "Favorites"){
+                }else if(value == "Video playlist"){
                   prefs.homeTab = 1;
-                }else if(value == "Playlist"){
-                  prefs.homeTab = 2;
                 }
                 print("Changed home tab to: " + value);
               },

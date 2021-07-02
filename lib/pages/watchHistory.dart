@@ -13,20 +13,6 @@ class WatchHistoryPage extends StatelessWidget {
     List<StreamInfoItem> history = prefs.watchHistory;
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
-      appBar: AppBar(
-        title: Text(
-          "Watch History",
-          style: TextStyle(
-            fontFamily: 'Product Sans',
-            fontWeight: FontWeight.w600,
-            color: Theme.of(context).textTheme.bodyText1.color
-          ),
-        ),
-        elevation: 0,
-        backgroundColor: Theme.of(context).cardColor,
-        iconTheme: IconThemeData(
-          color: Theme.of(context).iconTheme.color),
-      ),
       body: Column(
         children: [
           Divider(

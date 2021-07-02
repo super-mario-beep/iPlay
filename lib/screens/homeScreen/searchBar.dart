@@ -81,82 +81,97 @@ class _HomePageAppBarState extends State<HomePageAppBar>
                       color:
                           Theme.of(context).iconTheme.color.withOpacity(0.03),
                       borderRadius: BorderRadius.circular(15)),
-                  child: Lib.DOWNLOADING_ENABLED ? Row(
-                    children: [
-                      Expanded(
-                        child: Stack(
+                  child: true //Lib.DOWNLOADING_ENABLED
+                      ? Row(
                           children: [
-                            FadeTransition(
-                              opacity: Tween<double>(
-                                begin: 0.0,
-                                end: 1.0,
-                              ).animate(CurvedAnimation(
-                                  parent: _animationController,
-                                  curve: Curves.fastOutSlowIn,
-                                  reverseCurve: Curves.fastOutSlowIn)),
-                              child: _searchBarTextField(),
+                            Expanded(
+                              child: Stack(
+                                children: [
+                                  FadeTransition(
+                                    opacity: Tween<double>(
+                                      begin: 0.0,
+                                      end: 1.0,
+                                    ).animate(CurvedAnimation(
+                                        parent: _animationController,
+                                        curve: Curves.fastOutSlowIn,
+                                        reverseCurve: Curves.fastOutSlowIn)),
+                                    child: _searchBarTextField(),
+                                  ),
+                                  FadeTransition(
+                                    opacity: Tween<double>(
+                                      begin: 1.0,
+                                      end: 0.0,
+                                    ).animate(CurvedAnimation(
+                                        parent: _animationController,
+                                        curve: Curves.fastOutSlowIn,
+                                        reverseCurve: Curves.easeInQuart)),
+                                    child: SlideTransition(
+                                        position: Tween<Offset>(
+                                                begin: Offset.zero,
+                                                end: Offset(0.2, 0.0))
+                                            .animate(CurvedAnimation(
+                                                parent: _animationController,
+                                                curve: Curves.fastOutSlowIn,
+                                                reverseCurve:
+                                                    Curves.easeInQuart)),
+                                        child: _searchBarLogo()),
+                                  ),
+                                ],
+                              ),
                             ),
-                            FadeTransition(
-                              opacity: Tween<double>(
-                                begin: 1.0,
-                                end: 0.0,
-                              ).animate(CurvedAnimation(
-                                  parent: _animationController,
-                                  curve: Curves.fastOutSlowIn,
-                                  reverseCurve: Curves.easeInQuart)),
-                              child: SlideTransition(
-                                  position: Tween<Offset>(
-                                          begin: Offset.zero,
-                                          end: Offset(0.2, 0.0))
-                                      .animate(CurvedAnimation(
-                                          parent: _animationController,
-                                          curve: Curves.fastOutSlowIn,
-                                          reverseCurve: Curves.easeInQuart)),
-                                  child: _searchBarLogo()),
-                            ),
-                          ],
-                        ),
-                      ),
-                      AnimatedSwitcher(
-                          duration: Duration(milliseconds: 300),
-                          child: manager.searchController.text.isNotEmpty &&
-                                  manager.showSearchBar
-                              ? IconButton(
-                                  icon: Icon(EvaIcons.trashOutline,
-                                      color: Theme.of(context)
-                                          .iconTheme
-                                          .color
-                                          .withOpacity(0.6),
-                                      size: 20),
-                                  onPressed: () {
-                                    manager.searchController.clear();
-                                    setState(() {});
-                                  },
-                                )
-                              : Container()),
-                      FutureBuilder<dynamic>(
-                          future: _getClipboardData(),
-                          builder: (context, dynamic id) {
-                            return AnimatedSwitcher(
+                            AnimatedSwitcher(
                                 duration: Duration(milliseconds: 300),
-                                child: id.data != null
-                                    ? IconButton(
-                                        icon: Icon(EvaIcons.linkOutline,
-                                            color:
-                                                Theme.of(context).accentColor,
-                                            size: 20),
-                                        onPressed: () {
-                                          manager.searchBarFocusNode.unfocus();
-                                          if (id.data is _VideoId)
-                                            widget.onLoadVideo(id.data.id);
-                                          if (id.data is _PlaylistId)
-                                            widget.onLoadPlaylist(id.data.id);
-                                        },
-                                      )
-                                    : Container());
-                          }),
-                    ],
-                  ) : Container()),
+                                child:
+                                    manager.searchController.text.isNotEmpty &&
+                                            manager.showSearchBar
+                                        ? IconButton(
+                                            icon: Icon(EvaIcons.trashOutline,
+                                                color: Theme.of(context)
+                                                    .iconTheme
+                                                    .color
+                                                    .withOpacity(0.6),
+                                                size: 20),
+                                            onPressed: () {
+                                              manager.searchController.clear();
+                                              setState(() {});
+                                            },
+                                          )
+                                        : Container()),
+                            FutureBuilder<dynamic>(
+                                future: _getClipboardData(),
+                                builder: (context, dynamic id) {
+                                  return AnimatedSwitcher(
+                                      duration: Duration(milliseconds: 300),
+                                      child: id.data != null
+                                          ? IconButton(
+                                              icon: Icon(EvaIcons.linkOutline,
+                                                  color: Theme.of(context)
+                                                      .accentColor,
+                                                  size: 20),
+                                              onPressed: () {
+                                                manager.searchBarFocusNode
+                                                    .unfocus();
+                                                if (id.data is _VideoId)
+                                                  widget
+                                                      .onLoadVideo(id.data.id);
+                                                if (id.data is _PlaylistId)
+                                                  widget.onLoadPlaylist(
+                                                      id.data.id);
+                                              },
+                                            )
+                                          : Container());
+                                }),
+                            manager.searchController.text.isEmpty ?
+                            Container(
+                              margin: EdgeInsets.only(right: 15),
+                              child: Icon(Icons.search,
+                                  color: Theme.of(context)
+                                      .iconTheme.color,
+                                  size: 25),
+                            ) : Container()
+                          ],
+                        )
+                      : Container()),
             ),
           ],
         ));

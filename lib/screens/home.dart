@@ -36,16 +36,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     ManagerProvider manager =
-    Provider.of<ManagerProvider>(context, listen: false);
-    controller = TabController(length: 3, vsync: this);
+        Provider.of<ManagerProvider>(context, listen: false);
+    controller = TabController(length: 2, vsync: this);
     controller.addListener(() {
       int tabIndex = controller.index;
       if (tabIndex == 0) {
-        manager.currentHomeTab = HomeScreenTab.Trending;
+        manager.currentHomeTab = HomeScreenTab.WatchLater;
       } else if (tabIndex == 1) {
         manager.currentHomeTab = HomeScreenTab.Favorites;
-      } else if (tabIndex == 2) {
-        manager.currentHomeTab = HomeScreenTab.WatchLater;
       }
     });
     super.initState();
@@ -68,36 +66,21 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     List<Widget> _tabsView;
     if (homeTabValue == 0) {
       _tabs = [
-        Tab(text: Languages.of(context).labelTrending),
-        Tab(text: Languages.of(context).labelFavorites),
-        Tab(text: Languages.of(context).labelWatchLater)
+        Tab(text: "Audio playlist"),
+        Tab(text: "Video playlist")
       ];
       _tabsView = [
-        HomePageTrending(),
-        HomePageFavorites(),
-        HomePageWatchLater()
+        HomePageWatchLater(),
+        HomePageFavorites()
       ];
     } else if (homeTabValue == 1) {
       _tabs = [
-        Tab(text: Languages.of(context).labelFavorites),
-        Tab(text: Languages.of(context).labelWatchLater),
-        Tab(text: Languages.of(context).labelTrending)
+        Tab(text: "Video playlist"),
+        Tab(text: "Audio playlist")
       ];
       _tabsView = [
         HomePageFavorites(),
-        HomePageWatchLater(),
-        HomePageTrending()
-      ];
-    } else if (homeTabValue == 2) {
-      _tabs = [
-        Tab(text: Languages.of(context).labelWatchLater),
-        Tab(text: Languages.of(context).labelTrending),
-        Tab(text: Languages.of(context).labelFavorites)
-      ];
-      _tabsView = [
-        HomePageWatchLater(),
-        HomePageTrending(),
-        HomePageFavorites()
+        HomePageWatchLater()
       ];
     }
 
@@ -112,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               onLoadPlaylist: (id) async {
                 showDialog(context: context, builder: (_) => LoadingDialog());
                 YoutubePlaylist playlist =
-                await PlaylistExtractor.getPlaylistDetails(id);
+                    await PlaylistExtractor.getPlaylistDetails(id);
                 Provider.of<VideoPageProvider>(context, listen: false)
                     .infoItem = playlist.toPlaylistInfoItem();
                 Navigator.pop(context);
@@ -150,8 +133,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               manager.currentHomeTab = HomeScreenTab.Trending;
                             } else if (tabIndex == 1) {
                               manager.currentHomeTab = HomeScreenTab.Favorites;
-                            } else if (tabIndex == 2) {
-                              manager.currentHomeTab = HomeScreenTab.WatchLater;
                             }
                           },
                           labelStyle: TextStyle(
@@ -187,59 +168,62 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   indent: 12,
                   endIndent: 12),
               Expanded(
-                  child: manager.showSearchBar
-                      ? Container(
-                    color: Theme.of(context).cardColor,
-                    child: StreamsLargeThumbnailView(
-                      infoItems: manager
-                          ?.youtubeSearch?.dynamicSearchResultsList ??
-                          [],
-                      onReachingListEnd: () {
-                        manager.searchYoutube(
-                            query: manager.youtubeSearch.query);
-                      },
-                    ),
-                  )
-                      : TabBarView(
-                      controller: controller, children: _tabsView)),
+                child: manager.showSearchBar
+                    ? Container(
+                        color: Theme.of(context).cardColor,
+                        child: StreamsLargeThumbnailView(
+                          infoItems: manager
+                                  ?.youtubeSearch?.dynamicSearchResultsList ??
+                              [],
+                          onReachingListEnd: () {
+                            manager.searchYoutube(
+                                query: manager.youtubeSearch.query);
+                          },
+                        ),
+                      )
+                    : TabBarView(
+                        controller: controller,
+                        children: _tabsView,
+                      ),
+              ),
             ],
           ),
           AnimatedSwitcher(
               duration: Duration(milliseconds: 300),
               child: manager.searchBarFocusNode.hasFocus
                   ? Column(
-                children: [
-                  Container(
-                    height: manager.showSearchBar ? 0 : 40,
-                    color: Theme.of(context).cardColor,
-                  ),
-                  Expanded(
-                    child: Container(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      child: Consumer<ManagerProvider>(
-                          builder: (context, manager, _) {
-                            return SearchHistoryList(
-                              searchQuery: manager.searchController.text,
-                              onItemTap: (String item) {
-                                manager.searchController.text = item;
-                                manager.searchBarFocusNode.unfocus();
-                                manager.youtubeSearchQuery = item;
-                                controller.animateTo(0);
-                                manager.searchYoutube(
-                                    query: item, forceReload: true);
-                                if (item.length > 1) {
-                                  Future.delayed(
-                                      Duration(milliseconds: 400),
-                                          () => config.addStringtoSearchHistory(
-                                          item.trim()));
-                                }
-                              },
-                            );
-                          }),
-                    ),
-                  ),
-                ],
-              )
+                      children: [
+                        Container(
+                          height: manager.showSearchBar ? 0 : 40,
+                          color: Theme.of(context).cardColor,
+                        ),
+                        Expanded(
+                          child: Container(
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            child: Consumer<ManagerProvider>(
+                                builder: (context, manager, _) {
+                              return SearchHistoryList(
+                                searchQuery: manager.searchController.text,
+                                onItemTap: (String item) {
+                                  manager.searchController.text = item;
+                                  manager.searchBarFocusNode.unfocus();
+                                  manager.youtubeSearchQuery = item;
+                                  controller.animateTo(0);
+                                  manager.searchYoutube(
+                                      query: item, forceReload: true);
+                                  if (item.length > 1) {
+                                    Future.delayed(
+                                        Duration(milliseconds: 400),
+                                        () => config.addStringtoSearchHistory(
+                                            item.trim()));
+                                  }
+                                },
+                              );
+                            }),
+                          ),
+                        ),
+                      ],
+                    )
                   : Container())
         ],
       ),
