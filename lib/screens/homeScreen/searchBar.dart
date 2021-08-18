@@ -214,7 +214,7 @@ class _HomePageAppBarState extends State<HomePageAppBar>
             Expanded(
               child: IgnorePointer(
                 ignoring: true,
-                child: Text("iPlay",
+                child: Text("Tap to search YouTube",
                     style: TextStyle(
                       color: Theme.of(context)
                           .textTheme
@@ -223,7 +223,7 @@ class _HomePageAppBarState extends State<HomePageAppBar>
                           .withOpacity(0.6),
                       fontFamily: 'Product Sans',
                       fontWeight: FontWeight.w700,
-                      fontSize: 20,
+                      fontSize: 18,
                     )),
               ),
             ),

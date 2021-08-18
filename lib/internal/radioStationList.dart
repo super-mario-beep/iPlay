@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:songtube/internal/radioStreamingController.dart';
@@ -157,6 +158,13 @@ class _RadioStationList extends State<RadioStationList> {
     List<RadioStation> favorites = prefs.favoriteRadios;
     ManagerProvider manager = Provider.of<ManagerProvider>(context);
     List<RadioStation> queryStations = getStationsForQuery(query);
+
+    final BannerAd myBanner = BannerAd(
+      adUnitId: 'ca-app-pub-3940256099942544/6300978111',
+      size: AdSize.banner,
+      request: AdRequest(),
+      listener: BannerAdListener(),
+    )..load();
 
 
     return DefaultTabController(

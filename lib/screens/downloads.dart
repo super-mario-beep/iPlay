@@ -22,9 +22,16 @@ import 'package:songtube/screens/downloadScreen/tabs/queueTab.dart';
 import 'package:songtube/ui/components/autoHideScaffold.dart';
 import 'package:songtube/ui/sheets/joinTelegram.dart';
 
-class DownloadTab extends StatelessWidget {
+class DownloadTab extends StatefulWidget {
 
 
+  @override
+  _DownloadTabState createState() => _DownloadTabState();
+
+  static bool isReversed = false;
+}
+
+class _DownloadTabState extends State<DownloadTab> {
   @override
   Widget build(BuildContext context) {
     DownloadsProvider downloadsProvider =
@@ -45,11 +52,11 @@ class DownloadTab extends StatelessWidget {
       }
     }
 
-    if (_allMediaItems.length != allMediaItems.length) {
-      print("Fixing download song list");
-      mediaProvider.databaseSongs.clear();
-      mediaProvider.databaseSongs.addAll(_allMediaItems.reversed);
-    }
+    //if (_allMediaItems.length != allMediaItems.length) {
+      //print("Fixing download song list");
+     // mediaProvider.databaseSongs.clear();
+      //mediaProvider.databaseSongs.addAll(_allMediaItems.reversed);
+    //}
 
     for (MediaItem media in _allMediaItems.toSet().toList()) {
       if (!downloadedSongsNames.contains(media.title)) {
@@ -166,56 +173,15 @@ class DownloadTab extends StatelessWidget {
                             children: [
                               Container(
                                 child: IconButton(
-                                    icon: Icon(EvaIcons.shuffle2Outline),
+                                    icon: Icon(EvaIcons.refresh),
                                     color: isShuffle
                                         ? Theme.of(context).accentColor
                                         : Colors.white,
                                     onPressed: () async {
-                                      try {
-                                        print(
-                                            "Playing music while radio is on: " +
-                                                StreamingController.IS_PLAYING
-                                                    .toString());
-                                        if (StreamingController.IS_PLAYING) {
-                                          var streamingController =
-                                              StreamingController();
-                                          StreamingController.IS_PLAYING =
-                                              false;
-                                          streamingController.stop();
-                                        }
-                                      } on Exception catch (_) {
-                                        print('Trying shut down radio');
-                                      }
-                                      if (!AudioService.running) {
-                                        await AudioService.start(
-                                          backgroundTaskEntrypoint:
-                                              songtubePlayer,
-                                          androidNotificationChannelName:
-                                              'SongTube',
-                                          // Enable this if you want the Android service to exit the foreground state on pause.
-                                          //androidStopForegroundOnPause: true,
-                                          androidNotificationColor: 0xFF2196f3,
-                                          androidNotificationIcon:
-                                              'drawable/ic_stat_music_note',
-                                          androidEnableQueue: true,
-                                        );
-                                      }
-
-                                      List<MediaItem> songs =
-                                          mediaProvider.databaseSongs;
-                                      songs.shuffle();
-                                      if (listEquals(
-                                              songs, AudioService.queue) ==
-                                          false) {
-                                        await AudioService.updateQueue(songs);
-                                      }
-                                      VideoPageProvider tmp =
-                                          Provider.of<VideoPageProvider>(
-                                              context,
-                                              listen: false);
-                                      await AudioService.playMediaItem(songs[0])
-                                          .then((value) =>
-                                              {tmp.closeVideoPanel()});
+                                      setState(() {
+                                        List<MediaItem> allMediaItems = mediaProvider.databaseSongs;
+                                        mediaProvider.databaseSongs = allMediaItems.reversed.toList();
+                                      });
                                     }),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(50),
@@ -230,7 +196,7 @@ class DownloadTab extends StatelessWidget {
                                           blurRadius: 15)
                                     ]),
                               ),
-                              Text("Shuffle",
+                              Text("Reverse",
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontFamily: "YTSans",
@@ -240,41 +206,10 @@ class DownloadTab extends StatelessWidget {
                             ],
                           ),
                           onTap: () async {
-                            try {
-                              print("Playing music while radio is on: " +
-                                  StreamingController.IS_PLAYING.toString());
-                              if (StreamingController.IS_PLAYING) {
-                                var streamingController = StreamingController();
-                                StreamingController.IS_PLAYING = false;
-                                streamingController.stop();
-                              }
-                            } on Exception catch (_) {
-                              print('Trying shut down radio');
-                            }
-                            if (!AudioService.running) {
-                              await AudioService.start(
-                                backgroundTaskEntrypoint: songtubePlayer,
-                                androidNotificationChannelName: 'SongTube',
-                                // Enable this if you want the Android service to exit the foreground state on pause.
-                                //androidStopForegroundOnPause: true,
-                                androidNotificationColor: 0xFF2196f3,
-                                androidNotificationIcon:
-                                    'drawable/ic_stat_music_note',
-                                androidEnableQueue: true,
-                              );
-                            }
-
-                            List<MediaItem> songs = mediaProvider.databaseSongs;
-                            songs.shuffle();
-                            if (listEquals(songs, AudioService.queue) ==
-                                false) {
-                              await AudioService.updateQueue(songs);
-                            }
-                            VideoPageProvider tmp =
-                                Provider.of<VideoPageProvider>(context,
-                                    listen: false);
-                            await AudioService.playMediaItem(songs[0])
-                                .then((value) => {tmp.closeVideoPanel()});
+                            setState(() {
+                              List<MediaItem> allMediaItems = mediaProvider.databaseSongs;
+                              mediaProvider.databaseSongs = allMediaItems.reversed.toList();
+                            });
                           },
                         ),
                       ),

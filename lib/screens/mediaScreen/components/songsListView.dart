@@ -6,6 +6,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/audioStreamYt.dart';
 import 'package:songtube/downloadMenu/downloadMenu.dart';
 import 'package:songtube/internal/ffmpeg/converter.dart';
 import 'package:songtube/internal/languages.dart';
@@ -181,10 +182,12 @@ class SongsListView extends StatelessWidget {
                   if (listEquals(songs, AudioService.queue) == false) {
                     await AudioService.updateQueue(songs);
                   }
+                  AudioStreamPlayer.stop();
                   VideoPageProvider tmp = Provider.of<VideoPageProvider>(context,listen: false);
                   await AudioService.playMediaItem(songs[index]).then((value) => {
                     tmp.closeVideoPanel()
                   });
+                  AudioStreamPlayer.isAudioPlayer = true;
                 } else {
                   Navigator.push(
                       context,

@@ -4,11 +4,17 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:songtube/internal/ad_state.dart';
 import 'package:songtube/internal/languages.dart';
 import 'package:songtube/internal/nativeMethods.dart';
 import 'package:songtube/internal/randomString.dart';
@@ -38,18 +44,52 @@ import 'package:songtube/ui/internal/themeValues.dart';
 // Debug
 import 'package:flutter/scheduler.dart' show timeDilation;
 
+import 'audioStreamYt.dart';
+
 // const dsn = '';
 // final sentry = SentryClient(SentryOptions(dsn: dsn));
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   LegacyPreferences preferences = new LegacyPreferences();
+  if (AdManager.HAS_ADS) {
+    MobileAds.instance.initialize();
+   /* MobileAds.instance.updateRequestConfiguration(RequestConfiguration(
+        maxAdContentRating: MaxAdContentRating.g,
+        tagForUnderAgeOfConsent: TagForUnderAgeOfConsent.yes,
+        tagForChildDirectedTreatment: TagForChildDirectedTreatment.yes,
+        testDeviceIds: ["A012A23F9E1C0D5C6B7EFB8EFD20B1A9"]),);*/
+    for (int i = 0; i < 1; i++){
+      AdManager.banner = BannerAd(
+          size: AdSize.banner,
+          request: AdRequest(),
+          listener: AdManager.listener,
+          adUnitId: AdManager.bannerAdUnitId)
+        ..load();
+    }
+  }
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await preferences.initPreferences();
   if (kDebugMode)
     timeDilation = 1.0;
   runApp(Main(preloadedFs: preferences, prefs: prefs));
 
+  AudioStreamPlayer.player = AudioPlayer();
+
+
+  /*if(AdManager.HAS_ADS) {
+    AdManager.banner = AdmobBanner(
+        adUnitId: AdManager.bannerAdUnitId, adSize: AdmobBannerSize.BANNER);
+    /*AdManager.interstitial = AdmobInterstitial(
+      adUnitId: AdManager.interstitialAdUnitId,
+      listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+        if (event == AdmobAdEvent.closed) {
+          AdManager.interstitial.load();
+        }
+      },
+    );
+    AdManager.interstitial.load();*/
+  }*/
 }
 
 class Main extends StatefulWidget {
@@ -61,6 +101,7 @@ class Main extends StatefulWidget {
 
   final LegacyPreferences preloadedFs;
   final SharedPreferences prefs;
+
   Main({
     @required this.preloadedFs,
     @required this.prefs
@@ -74,6 +115,7 @@ class _MainState extends State<Main> {
 
   // Language
   Locale _locale;
+
   void setLocale(Locale locale) {
     setState(() {
       _locale = locale;
@@ -95,7 +137,8 @@ class _MainState extends State<Main> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<ConfigurationProvider>(
-            create: (context) => ConfigurationProvider(preferences: widget.preloadedFs)
+            create: (context) =>
+                ConfigurationProvider(preferences: widget.preloadedFs)
         ),
         ChangeNotifierProvider<ManagerProvider>(
             create: (context) => ManagerProvider()
@@ -113,8 +156,9 @@ class _MainState extends State<Main> {
           create: (context) => VideoPageProvider(),
         ),
       ],
-      child: Builder( builder: (context) {
-        ConfigurationProvider config = Provider.of<ConfigurationProvider>(context);
+      child: Builder(builder: (context) {
+        ConfigurationProvider config = Provider.of<ConfigurationProvider>(
+            context);
         ThemeData customTheme;
         ThemeData darkTheme;
 
@@ -158,7 +202,8 @@ class _MainState extends State<Main> {
           darkTheme: darkTheme,
           initialRoute: 'homeScreen',
           routes: {
-            'homeScreen':  (context) => AudioServiceWidget(child: Material(child: Lib())),
+            'homeScreen': (context) =>
+                AudioServiceWidget(child: Material(child: Lib())),
           },
         );
       }),

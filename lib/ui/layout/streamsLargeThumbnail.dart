@@ -1,7 +1,9 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:newpipeextractor_dart/extractors/channels.dart';
 import 'package:newpipeextractor_dart/extractors/playlist.dart';
@@ -9,14 +11,18 @@ import 'package:newpipeextractor_dart/models/channel.dart';
 import 'package:newpipeextractor_dart/models/infoItems/channel.dart';
 import 'package:newpipeextractor_dart/models/infoItems/playlist.dart';
 import 'package:newpipeextractor_dart/models/infoItems/video.dart';
+import 'package:newpipeextractor_dart/models/streams/audioOnlyStream.dart';
 import 'package:newpipeextractor_dart/utils/url.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:songtube/downloadMenu/downloadMenu.dart';
+import 'package:songtube/internal/ad_state.dart';
 import 'package:songtube/internal/languages.dart';
+import 'package:songtube/internal/radioStreamingController.dart';
 import 'package:songtube/lib.dart';
 import 'package:songtube/pages/channel.dart';
+import 'package:songtube/players/service/playerService.dart';
 import 'package:songtube/provider/managerProvider.dart';
 import 'package:songtube/provider/mediaProvider.dart';
 import 'package:songtube/provider/preferencesProvider.dart';
@@ -30,6 +36,10 @@ import 'package:songtube/ui/internal/popupMenu.dart';
 import 'package:songtube/ui/internal/snackbar.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:video_player/video_player.dart';
+
+import '../../audioStreamYt.dart';
 
 class StreamsLargeThumbnailView extends StatefulWidget {
   final List<dynamic> infoItems;
@@ -39,6 +49,7 @@ class StreamsLargeThumbnailView extends StatefulWidget {
   final bool allowSaveToWatchLater;
   final Function onReachingListEnd;
   final bool isFavorites;
+
   StreamsLargeThumbnailView({
     @required this.infoItems,
     this.shrinkWrap = false,
@@ -50,12 +61,14 @@ class StreamsLargeThumbnailView extends StatefulWidget {
   });
 
   @override
-  _StreamsLargeThumbnailViewState createState() => _StreamsLargeThumbnailViewState();
+  _StreamsLargeThumbnailViewState createState() =>
+      _StreamsLargeThumbnailViewState();
 }
 
 class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
   @override
   Widget build(BuildContext context) {
+
     if (widget.infoItems.isNotEmpty) {
       return NotificationListener<ScrollNotification>(
         onNotification: (notification) {
@@ -74,32 +87,77 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
                 duration: Duration(milliseconds: 300),
                 child: Padding(
                   padding: EdgeInsets.only(
-                      bottom: 16, top: index == 0 ? 12 : 0,
-                      left: 12, right: 12
-                  ),
+                      bottom: 16,
+                      top: index == 0 ? 12 : 0,
+                      left: 12,
+                      right: 12),
                   child: Consumer<VideoPageProvider>(
                       builder: (context, provider, child) {
                         return GestureDetector(
-                          onTap: () {
+                          onTap: () async {
                             print("VIDEO CLICKED");
-                            if(Lib.DOWNLOADING_ENABLED) {
+                            if (Lib.DOWNLOADING_ENABLED) {
                               if (infoItem is StreamInfoItem ||
                                   infoItem is PlaylistInfoItem) {
                                 provider.infoItem = infoItem;
+                                //provider.closeVideoPanel();
+                                //Future.delayed(const Duration(milliseconds: 500), () {
+                                //provider.initializeStream(infoItem);
+                                //});
+
+                                try {
+                                  print("Playing music while radio is on: " +
+                                      StreamingController.IS_PLAYING
+                                          .toString());
+                                  if (StreamingController.IS_PLAYING) {
+                                    var streamingController =
+                                        StreamingController();
+                                    StreamingController.IS_PLAYING = false;
+                                    streamingController.stop();
+                                  }
+                                } on Exception catch (_) {
+                                  print('Trying shut down radio');
+                                }
+
+                                if (AudioService.running) {
+                                  await AudioService.stop();
+                                }
+
+                                if (infoItem is StreamInfoItem) {
+                                  infoItem.getVideo.then((video) {
+                                    if (AudioStreamPlayer.isAudioPlayer) {
+                                      AudioStreamPlayer.setUrlStream(video);
+                                      if (!AudioStreamPlayer.isPlaying) {
+                                        AudioStreamPlayer.play();
+                                      }
+                                    } else {
+                                      //AudioStreamPlayer.videoPlayerController.dispose();
+                                      //AudioStreamPlayer.videoPlayerController = VideoPlayerController.network(video.videoStreams[0].url);
+                                      AudioStreamPlayer.videoPlayerController
+                                          .changeVideoUrl(
+                                              video.videoStreams[0].url);
+                                      AudioStreamPlayer.videoPlayerController
+                                          .seekTo(Duration(seconds: 0));
+                                    }
+                                  });
+                                }
                               } else {
-                                Navigator.push(context,
+                                Navigator.push(
+                                    context,
                                     BlurPageRoute(
-                                        blurStrength: Provider
-                                            .of<PreferencesProvider>
-                                          (context, listen: false)
-                                            .enableBlurUI ? 20 : 0,
-                                        builder: (_) =>
-                                            YoutubeChannelPage(
+                                        blurStrength:
+                                            Provider.of<PreferencesProvider>(
+                                                        context,
+                                                        listen: false)
+                                                    .enableBlurUI
+                                                ? 20
+                                                : 0,
+                                        builder: (_) => YoutubeChannelPage(
                                               url: infoItem.url,
                                               name: infoItem.name,
                                             )));
                               }
-                            }else{
+                            } else {
                               //No streaming allowed
                               launch(infoItem.url);
                             }
@@ -110,34 +168,37 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
                       child: infoItem is ChannelInfoItem
                           ? _channelWidget(context, infoItem)
                           : Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(bottom: 8),
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: _thumbnailWidget(context, infoItem)
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(bottom: 8),
-                            child: _infoItemDetails(context, infoItem),
-                          )
-                        ],
-                      )
-                  ),
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 8),
+                                  child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child:
+                                          _thumbnailWidget(context, infoItem)),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 8),
+                                  child: _infoItemDetails(context, infoItem),
+                                ),
+                                /*if (index == 0 && AdManager.banner != null)
+                                  Container(
+                                    alignment: Alignment.center,
+                                    child: AdWidget(ad: AdManager.banner),
+                                    width: AdManager.banner.size.width.toDouble(),
+                                    height: AdManager.banner.size.height.toDouble(),
+                                  )*/
+                              ],
+                            )),
                 ),
               );
-            }
-        ),
+            }),
       );
     } else {
       return ListView.builder(
         itemCount: 20,
         itemBuilder: (context, index) {
           return Padding(
-            padding: EdgeInsets.only(
-                top: index == 0 ? 12 : 0
-            ),
+            padding: EdgeInsets.only(top: index == 0 ? 12 : 0),
             child: _shimmerTile(context),
           );
         },
@@ -185,8 +246,7 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
                     fontSize: 18,
                     fontFamily: 'Product Sans',
                     fontWeight: FontWeight.w600,
-                    letterSpacing: 0.2
-                ),
+                    letterSpacing: 0.2),
               ),
               Text(
                 "${NumberFormat().format(channel.subscriberCount)} Subs • ${channel.streamCount} videos",
@@ -211,17 +271,15 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
       alignment: Alignment.bottomCenter,
       children: [
         AspectRatio(
-          aspectRatio: 16/9,
+          aspectRatio: 16 / 9,
           child: Transform.scale(
             scale: 1.01,
             child: FadeInImage(
               fadeInDuration: Duration(milliseconds: 200),
               placeholder: MemoryImage(kTransparentImage),
-              image: NetworkImage(
-                  infoItem is StreamInfoItem
-                      ? infoItem.thumbnails.hqdefault
-                      : (infoItem as PlaylistInfoItem).thumbnailUrl
-              ),
+              image: NetworkImage(infoItem is StreamInfoItem
+                  ? infoItem.thumbnails.hqdefault
+                  : (infoItem as PlaylistInfoItem).thumbnailUrl),
               fit: BoxFit.cover,
             ),
           ),
@@ -230,12 +288,12 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
           Align(
             alignment: Alignment.bottomRight,
             child: Container(
-                margin: EdgeInsets.only(right: 10, bottom: isSongDownloaded ? 40 : 10),
+                margin: EdgeInsets.only(
+                    right: 10, bottom: isSongDownloaded ? 40 : 10),
                 padding: EdgeInsets.all(3),
                 decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.6),
-                    borderRadius: BorderRadius.circular(3)
-                ),
+                    borderRadius: BorderRadius.circular(3)),
                 child: Text(
                   "${Duration(seconds: infoItem.duration).inMinutes}:" +
                       "${Duration(seconds: infoItem.duration).inSeconds.remainder(60).toString().padRight(2, "0")}",
@@ -243,10 +301,8 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
                       fontFamily: 'Product Sans',
                       fontWeight: FontWeight.w600,
                       color: Colors.white,
-                      fontSize: 10
-                  ),
-                )
-            ),
+                      fontSize: 10),
+                )),
           ),
         if (infoItem is PlaylistInfoItem)
           Container(
@@ -254,16 +310,13 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
                 color: Colors.black.withOpacity(0.4),
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10)
-                )
-            ),
+                    bottomRight: Radius.circular(10))),
             height: 25,
             child: Center(
-              child: Icon(EvaIcons.musicOutline,
-                  color: Colors.white, size: 20),
+              child: Icon(EvaIcons.musicOutline, color: Colors.white, size: 20),
             ),
           ),
-        if(isSongDownloaded)
+        if (isSongDownloaded)
           Align(
             alignment: Alignment.bottomRight,
             child: Container(
@@ -285,16 +338,17 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
     );
   }
 
-  bool _isSongDownloaded(BuildContext context, String name){
-    if(name == null){
+  bool _isSongDownloaded(BuildContext context, String name) {
+    if (name == null) {
       return false;
-    }else if(name == ""){
+    } else if (name == "") {
       return false;
-    }else{
-      MediaProvider mediaProvider = Provider.of<MediaProvider>(context, listen: false);
+    } else {
+      MediaProvider mediaProvider =
+          Provider.of<MediaProvider>(context, listen: false);
       List<MediaItem> list = mediaProvider.databaseSongs;
-      for(MediaItem item in list){
-        if(item.title == name || item.title == name.replaceAll("|", "")){
+      for (MediaItem item in list) {
+        if (item.title == name || item.title == name.replaceAll("|", "")) {
           return true;
         }
       }
@@ -309,60 +363,64 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
       children: [
         infoItem is StreamInfoItem
             ? FutureBuilder(
-          future: _getChannelLogoUrl(infoItem.uploaderUrl),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(context,
-                      BlurPageRoute(
-                          blurStrength: Provider.of<PreferencesProvider>
-                            (context, listen: false).enableBlurUI ? 20 : 0,
-                          builder: (_) =>
-                              YoutubeChannelPage(
-                                url: infoItem.uploaderUrl,
-                                name: infoItem.uploaderName,
-                                lowResAvatar: snapshot.data,
-                                heroTag: infoItem.uploaderUrl + infoItem.id,
-                              )));
-                },
-                child: Hero(
-                  tag: infoItem.uploaderUrl + infoItem.id,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: FadeInImage(
-                      fadeInDuration: Duration(milliseconds: 300),
-                      placeholder: MemoryImage(kTransparentImage),
-                      image: NetworkImage(snapshot.data),
-                      fit: BoxFit.cover,
+                future: _getChannelLogoUrl(infoItem.uploaderUrl),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            BlurPageRoute(
+                                blurStrength: Provider.of<PreferencesProvider>(
+                                            context,
+                                            listen: false)
+                                        .enableBlurUI
+                                    ? 20
+                                    : 0,
+                                builder: (_) => YoutubeChannelPage(
+                                      url: infoItem.uploaderUrl,
+                                      name: infoItem.uploaderName,
+                                      lowResAvatar: snapshot.data,
+                                      heroTag:
+                                          infoItem.uploaderUrl + infoItem.id,
+                                    )));
+                      },
+                      child: Hero(
+                        tag: infoItem.uploaderUrl + infoItem.id,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: FadeInImage(
+                            fadeInDuration: Duration(milliseconds: 300),
+                            placeholder: MemoryImage(kTransparentImage),
+                            image: NetworkImage(snapshot.data),
+                            fit: BoxFit.cover,
+                            height: 50,
+                            width: 50,
+                          ),
+                        ),
+                      ),
+                    );
+                  } else {
+                    return ShimmerContainer(
                       height: 50,
                       width: 50,
-                    ),
-                  ),
-                ),
-              );
-            } else {
-              return ShimmerContainer(
+                      borderRadius: BorderRadius.circular(100),
+                    );
+                  }
+                },
+              )
+            : Container(
                 height: 50,
                 width: 50,
-                borderRadius: BorderRadius.circular(100),
-              );
-            }
-          },
-        )
-            : Container(
-          height: 50,
-          width: 50,
-          decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              borderRadius: BorderRadius.circular(100)
-          ),
-          child: Icon(
-            Icons.playlist_play_outlined,
-            color: Theme.of(context).iconTheme.color,
-            size: 32,
-          ),
-        ),
+                decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.circular(100)),
+                child: Icon(
+                  Icons.playlist_play_outlined,
+                  color: Theme.of(context).iconTheme.color,
+                  size: 32,
+                ),
+              ),
         SizedBox(width: 12),
         Expanded(
           child: Padding(
@@ -374,23 +432,22 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
                 Text(
                   "${infoItem.name}",
                   maxLines: 2,
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600
-                  ),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                 ),
                 SizedBox(height: 4),
                 Text(
                   "${infoItem.uploaderName}" +
                       (infoItem is StreamInfoItem
                           ? "${infoItem.viewCount != -1 ? " • " + NumberFormat.compact().format(infoItem.viewCount) + " views" : ""}"
-                          " ${infoItem.uploadDate == null ? "" : " • " + infoItem.uploadDate}"
+                              " ${infoItem.uploadDate == null ? "" : " • " + infoItem.uploadDate}"
                           : ""),
                   style: TextStyle(
                       fontSize: 12,
-                      color: Theme.of(context).textTheme.bodyText1.color
-                          .withOpacity(0.8)
-                  ),
+                      color: Theme.of(context)
+                          .textTheme
+                          .bodyText1
+                          .color
+                          .withOpacity(0.8)),
                 )
               ],
             ),
@@ -421,14 +478,14 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: Shimmer.fromColors(
-                baseColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
+                baseColor:
+                    Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
                 highlightColor: Theme.of(context).cardColor,
                 child: AspectRatio(
-                  aspectRatio: 16/9,
+                  aspectRatio: 16 / 9,
                   child: Container(
                     decoration: BoxDecoration(
-                        color: Theme.of(context).scaffoldBackgroundColor
-                    ),
+                        color: Theme.of(context).scaffoldBackgroundColor),
                   ),
                 ),
               ),
@@ -439,7 +496,9 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
             child: Row(
               children: [
                 Shimmer.fromColors(
-                  baseColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
+                  baseColor: Theme.of(context)
+                      .scaffoldBackgroundColor
+                      .withOpacity(0.6),
                   highlightColor: Theme.of(context).cardColor,
                   child: Container(
                     height: 60,
@@ -447,34 +506,35 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
                     margin: EdgeInsets.only(right: 8),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(100),
-                        color: Theme.of(context).scaffoldBackgroundColor
-                    ),
+                        color: Theme.of(context).scaffoldBackgroundColor),
                   ),
                 ),
                 Expanded(
                   child: Column(
                     children: [
                       Shimmer.fromColors(
-                        baseColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
+                        baseColor: Theme.of(context)
+                            .scaffoldBackgroundColor
+                            .withOpacity(0.6),
                         highlightColor: Theme.of(context).cardColor,
                         child: Container(
                           height: 20,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(5),
-                              color: Theme.of(context).scaffoldBackgroundColor
-                          ),
+                              color: Theme.of(context).scaffoldBackgroundColor),
                         ),
                       ),
                       SizedBox(height: 8),
                       Shimmer.fromColors(
-                        baseColor: Theme.of(context).scaffoldBackgroundColor.withOpacity(0.6),
+                        baseColor: Theme.of(context)
+                            .scaffoldBackgroundColor
+                            .withOpacity(0.6),
                         highlightColor: Theme.of(context).cardColor,
                         child: Container(
                           height: 20,
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(5),
-                              color: Theme.of(context).scaffoldBackgroundColor
-                          ),
+                              color: Theme.of(context).scaffoldBackgroundColor),
                         ),
                       ),
                     ],
@@ -493,39 +553,26 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
     return FlexiblePopupMenu(
       items: [
         FlexiblePopupItem(
-            title: Languages.of(context).labelShare,
-            value: "Share"
-        ),
+            title: Languages.of(context).labelShare, value: "Share"),
         FlexiblePopupItem(
-            title: Languages.of(context).labelCopyLink,
-            value: "CopyLink"
-        ),
+            title: Languages.of(context).labelCopyLink, value: "CopyLink"),
         if (infoItem is StreamInfoItem && Lib.DOWNLOADING_ENABLED)
           FlexiblePopupItem(
-              title: Languages.of(context).labelDownload,
-              value: "Download"
-          ),
+              title: Languages.of(context).labelDownload, value: "Download"),
         if (widget.onDelete != null)
           FlexiblePopupItem(
-              title: Languages.of(context).labelRemove,
-              value: "Remove"
-          ),
+              title: Languages.of(context).labelRemove, value: "Remove"),
         FlexiblePopupItem(
             title: Languages.of(context).labelAddToPlaylist,
-            value: "AddPlaylist"
-        ),
+            value: "AddPlaylist"),
       ],
       onItemTap: (String value) async {
-        switch(value) {
+        switch (value) {
           case "Share":
-            Share.share(
-                infoItem.url
-            );
+            Share.share(infoItem.url);
             break;
           case "CopyLink":
-            Clipboard.setData(ClipboardData(
-                text: infoItem.url
-            ));
+            Clipboard.setData(ClipboardData(text: infoItem.url));
             final scaffold = Scaffold.of(context);
             AppSnack.showSnackBar(
               icon: Icons.copy,
@@ -540,8 +587,7 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30)
-                  ),
+                      topRight: Radius.circular(30)),
                 ),
                 clipBehavior: Clip.antiAlias,
                 context: context,
@@ -551,17 +597,15 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
                     children: [
                       Consumer<ManagerProvider>(
                           builder: (context, provider, _) {
-                            return DownloadMenu(
-                              videoUrl: url,
-                              scaffoldState: provider
-                                  .internalScaffoldKey.currentState,
-                            );
-                          }
-                      ),
+                        return DownloadMenu(
+                          videoUrl: url,
+                          scaffoldState:
+                              provider.internalScaffoldKey.currentState,
+                        );
+                      }),
                     ],
                   );
-                }
-            );
+                });
             break;
           case "Remove":
             widget.onDelete(infoItem);
@@ -573,16 +617,15 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(15),
-                          topRight: Radius.circular(15)
-                      )
-                  ),
+                          topRight: Radius.circular(15))),
                   builder: (context) {
                     return AddStreamToPlaylistSheet(stream: infoItem);
-                  }
-              );
+                  });
             } else {
               PlaylistInfoItem playlist = infoItem as PlaylistInfoItem;
-              if (prefs.streamPlaylists.indexWhere((element) => element.name == playlist.name) != -1) {
+              if (prefs.streamPlaylists
+                      .indexWhere((element) => element.name == playlist.name) !=
+                  -1) {
                 AppSnack.showSnackBar(
                   icon: Icons.warning_rounded,
                   title: Languages.of(context).labelCancelled,
@@ -596,13 +639,9 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
                   barrierDismissible: false,
                   builder: (context) {
                     return LoadingDialog();
-                  }
-              );
-              prefs.streamPlaylistCreate(
-                  playlist.name,
-                  playlist.uploaderName,
-                  await PlaylistExtractor.getPlaylistStreams(playlist.url)
-              );
+                  });
+              prefs.streamPlaylistCreate(playlist.name, playlist.uploaderName,
+                  await PlaylistExtractor.getPlaylistStreams(playlist.url));
               Navigator.pop(context);
               AppSnack.showSnackBar(
                 icon: Icons.playlist_add_check_rounded,
@@ -618,8 +657,7 @@ class _StreamsLargeThumbnailViewState extends State<StreamsLargeThumbnailView> {
       child: Container(
         padding: EdgeInsets.all(4),
         color: Colors.transparent,
-        child: Icon(Icons.more_vert_rounded,
-            size: 16),
+        child: Icon(Icons.more_vert_rounded, size: 16),
       ),
     );
   }

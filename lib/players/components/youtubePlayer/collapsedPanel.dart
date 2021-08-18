@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:newpipeextractor_dart/models/infoItems/video.dart';
 import 'package:provider/provider.dart';
+import 'package:songtube/audioStreamYt.dart';
 import 'package:songtube/players/components/musicPlayer/ui/marqueeWidget.dart';
 import 'package:songtube/provider/videoPageProvider.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -14,14 +15,13 @@ class VideoPageCollapsed extends StatelessWidget {
     String title = pageProvider?.infoItem?.name ?? "";
     String author = pageProvider?.infoItem?.uploaderName ?? "";
     String thumbnailUrl = pageProvider.infoItem is StreamInfoItem
-      ? pageProvider?.infoItem?.thumbnails?.hqdefault ?? ""
-      : pageProvider?.infoItem?.thumbnailUrl ?? "";
+        ? pageProvider?.infoItem?.thumbnails?.hqdefault ?? ""
+        : pageProvider?.infoItem?.thumbnailUrl ?? "";
     return Container(
       height: kBottomNavigationBarHeight * 1.15,
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(10)
-      ),
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(10)),
       child: Row(
         children: [
           Expanded(
@@ -33,25 +33,22 @@ class VideoPageCollapsed extends StatelessWidget {
                   width: 50,
                   margin: EdgeInsets.only(left: 8),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: pageProvider.infoItem is StreamInfoItem
-                    ? FadeInImage(
-                        fadeInDuration: Duration(milliseconds: 400),
-                        placeholder: MemoryImage(kTransparentImage),
-                        image: NetworkImage(thumbnailUrl),
-                        fit: BoxFit.cover,
-                      )
-                    : Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                          borderRadius: BorderRadius.circular(50)
-                        ),
-                        child: Icon(
-                          MdiIcons.playlistMusic,
-                          color: Theme.of(context).iconTheme.color
-                        ),
-                      )
-                  ),
+                      borderRadius: BorderRadius.circular(10),
+                      child: pageProvider.infoItem is StreamInfoItem
+                          ? FadeInImage(
+                              fadeInDuration: Duration(milliseconds: 400),
+                              placeholder: MemoryImage(kTransparentImage),
+                              image: NetworkImage(thumbnailUrl),
+                              fit: BoxFit.cover,
+                            )
+                          : Container(
+                              decoration: BoxDecoration(
+                                  color:
+                                      Theme.of(context).scaffoldBackgroundColor,
+                                  borderRadius: BorderRadius.circular(50)),
+                              child: Icon(MdiIcons.playlistMusic,
+                                  color: Theme.of(context).iconTheme.color),
+                            )),
                 ),
                 Expanded(
                   child: Container(
@@ -67,29 +64,29 @@ class VideoPageCollapsed extends StatelessWidget {
                           direction: Axis.horizontal,
                           child: Text(
                             "$title",
-                            style: TextStyle(
-                              fontFamily: 'YTSans',
-                              fontSize: 16
-                            ),
+                            style:
+                                TextStyle(fontFamily: 'YTSans', fontSize: 16),
                             maxLines: 1,
                             overflow: TextOverflow.fade,
                             softWrap: false,
                           ),
                         ),
+                        if (author != "") SizedBox(height: 2),
                         if (author != "")
-                        SizedBox(height: 2),
-                        if (author != "")
-                        Text(
-                          "$author",
-                          style: TextStyle(
-                            fontFamily: 'YTSans',
-                            fontSize: 11,
-                            color: Theme.of(context).textTheme.bodyText1.color.withOpacity(0.6)
-                          ),
-                          overflow: TextOverflow.fade,
-                          softWrap: false,
-                          maxLines: 1,
-                        )
+                          Text(
+                            "$author",
+                            style: TextStyle(
+                                fontFamily: 'YTSans',
+                                fontSize: 11,
+                                color: Theme.of(context)
+                                    .textTheme
+                                    .bodyText1
+                                    .color
+                                    .withOpacity(0.6)),
+                            overflow: TextOverflow.fade,
+                            softWrap: false,
+                            maxLines: 1,
+                          )
                       ],
                     ),
                   ),
@@ -102,25 +99,46 @@ class VideoPageCollapsed extends StatelessWidget {
           Container(
             color: Colors.transparent,
             child: IconButton(
-              icon: pageProvider?.playerKey?.currentState?.controller?.value?.isPlaying ?? false
-                ? Icon(MdiIcons.pause, size: 22)
-                : Icon(MdiIcons.play, size: 22),
-              onPressed: pageProvider?.playerKey?.currentState?.controller?.value?.isPlaying ?? false
-                ? () { pageProvider.playerKey.currentState.controller.pause(); pageProvider.setState(); }
-                : () { pageProvider.playerKey.currentState.controller.play(); pageProvider.setState(); }
-            ),
+                icon: (AudioStreamPlayer.isAudioPlayer && AudioStreamPlayer.isPlaying) || (!AudioStreamPlayer.isAudioPlayer && AudioStreamPlayer.isVideoPlaying)
+                    ? Icon(MdiIcons.pause, size: 22)
+                    : Icon(MdiIcons.play, size: 22),
+                onPressed: () {
+                  if (AudioStreamPlayer.isAudioPlayer) {
+                    if (AudioStreamPlayer.isPlaying) {
+                      AudioStreamPlayer.pause();
+                      pageProvider.setState();
+                      AudioStreamPlayer.isPlaying = false;
+                    }else{
+                      AudioStreamPlayer.play();
+                      pageProvider.setState();
+                      AudioStreamPlayer.isPlaying = true;
+                    }
+                  } else {
+                    if(AudioStreamPlayer.isVideoPlaying){
+                      AudioStreamPlayer.videoPlayerController.pause();
+                      AudioStreamPlayer.isVideoPlaying = false;
+                      pageProvider.setState();
+                    }else{
+                      AudioStreamPlayer.videoPlayerController.play();
+                      AudioStreamPlayer.isVideoPlaying = true;
+                      pageProvider.setState();
+                    }
+                  }
+                }),
           ),
           InkWell(
             onTap: () {
+              AudioStreamPlayer.stop();
+              AudioStreamPlayer.videoPlayerController.pause();
+              AudioStreamPlayer.isAudioPlayer = true;
               pageProvider.closeVideoPanel();
             },
             child: Ink(
-              color: Colors.transparent,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Icon(EvaIcons.closeOutline),
-              )
-            ),
+                color: Colors.transparent,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Icon(EvaIcons.closeOutline),
+                )),
           ),
           SizedBox(width: 16)
         ],

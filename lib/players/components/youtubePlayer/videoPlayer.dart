@@ -3,13 +3,20 @@ import 'dart:ui';
 
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:newpipeextractor_dart/models/infoItems/playlist.dart';
+import 'package:newpipeextractor_dart/models/infoItems/video.dart';
 import 'package:newpipeextractor_dart/models/streams/audioOnlyStream.dart';
 import 'package:newpipeextractor_dart/models/streams/videoOnlyStream.dart';
+import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter_screen/flutter_screen.dart';
+import 'package:songtube/pages/channel.dart';
 import 'package:songtube/players/components/youtubePlayer/player/playPauseButton.dart';
 import 'package:songtube/players/components/youtubePlayer/player/playerAppBar.dart';
 import 'package:songtube/players/components/youtubePlayer/player/playerProgressBar.dart';
+import 'package:songtube/provider/preferencesProvider.dart';
+import 'package:songtube/provider/videoPageProvider.dart';
+import 'package:songtube/ui/animations/blurPageRoute.dart';
 import 'package:video_player/video_player.dart';
 import 'package:volume/volume.dart';
 
@@ -25,6 +32,7 @@ class StreamManifestPlayer extends StatefulWidget {
   final bool forceHideControls;
   final String quality;
   final Function(String) onQualityChanged;
+  final String streamImagePath;
   StreamManifestPlayer({
     Key key,
     @required this.videoTitle,
@@ -36,6 +44,7 @@ class StreamManifestPlayer extends StatefulWidget {
     this.onEnterPipMode,
     this.borderRadius,
     this.forceHideControls = false,
+    this.streamImagePath,
     @required this.quality,
     @required this.onQualityChanged
   }) : super(key: key);
@@ -51,6 +60,7 @@ class StreamManifestPlayerState extends State<StreamManifestPlayer> {
   bool videoEnded = false;
   bool buffering = true;
   String currentQuality;
+  bool isAudioOnly = true;
 
   // Reverse and Forward Animation
   bool showReverse = false;
@@ -269,12 +279,25 @@ class StreamManifestPlayerState extends State<StreamManifestPlayer> {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // Video Beign Played
+            // Video Being Played
             Container(
               child: _controller.value.isInitialized
                 ? AspectRatio(
                     aspectRatio: _controller?.value?.aspectRatio ?? 16/9,
-                    child: VideoPlayer(_controller)
+                    child: isAudioOnly ?
+                     Container(
+                      height: double.infinity,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: NetworkImage(
+                              widget.streamImagePath),
+                          fit: BoxFit.fill,
+                        ),
+                        shape: BoxShape.circle,
+                      ),
+                    )
+                    : VideoPlayer(_controller)
                   )
                 : Container(color: Colors.black),
             ),
@@ -453,18 +476,28 @@ class StreamManifestPlayerState extends State<StreamManifestPlayer> {
                         currentQuality: currentQuality,
                         videoTitle: widget.videoTitle,
                         streams: widget.streams,
+                        isAudioStreamOnly: isAudioOnly,
                         onStreamSelect: (String url, String quality) {
                           _controller.changeVideoUrl(url);
                           widget.onQualityChanged(quality.split("p").first);
                           setState(() => currentQuality = quality.split("p").first);
                         },
                         onEnterPipMode: widget.onEnterPipMode,
+                        onVideoStreamMode: (){
+                          setState(() {
+                            isAudioOnly = !isAudioOnly;
+                          });
+                        },
                       ),
                     ),
                     // Play/Pause Buttons
                     PlayPauseButton(
                       isBuffering: buffering,
                       isPlaying: isPlaying,
+                      isRepeat: false,
+                      onRepeat: (){
+
+                      },
                       onPlayPause: () async {
                         if (controller.value.isPlaying) {
                           await controller.pause();

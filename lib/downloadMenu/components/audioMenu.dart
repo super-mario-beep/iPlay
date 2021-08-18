@@ -149,7 +149,7 @@ class _AudioDownloadMenuState extends State<AudioDownloadMenu>
                               Column(
                                 children: [
                                   Text(
-                                    index == 0 ? "${widget.video.audioOnlyStreams[index].formatName}" : "Coming soon",
+                                    "${widget.video.audioOnlyStreams[index].formatName}",
                                     overflow: TextOverflow.fade,
                                     textAlign: TextAlign.center,
                                     softWrap: false,

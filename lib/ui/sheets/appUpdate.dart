@@ -6,9 +6,11 @@ import 'package:avatar_glow/avatar_glow.dart';
 import 'package:dio/dio.dart';
 import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:newpipeextractor_dart/utils/httpClient.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:songtube/internal/ad_state.dart';
 import 'package:songtube/internal/languages.dart';
 import 'package:songtube/internal/models/updateDetails.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -18,9 +20,7 @@ import 'package:url_launcher/url_launcher.dart';
 class AppUpdateSheet extends StatelessWidget {
   final UpdateDetails details;
   final String news;
-
   AppUpdateSheet(this.details, this.news);
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -127,7 +127,7 @@ class AppUpdateSheet extends StatelessWidget {
                 ),
               )
             ],
-          )
+          ),
         ],
       ),
     );
@@ -273,7 +273,8 @@ class _AppUpdateDownloadSheetState extends State<AppUpdateDownloadSheet> {
                     ),
                   )
                 ],
-              )
+              ),
+
             ],
           ),
         ),

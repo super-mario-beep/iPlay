@@ -16,6 +16,8 @@ class VideoEngagement extends StatelessWidget {
   final Function onOpenComments;
   final Function onSaveToPlaylist;
   final YoutubeVideo video;
+  final bool isAudioPlayer;
+  final Function onPlayerTypeTap;
 
   VideoEngagement({
     @required this.likeCount,
@@ -24,6 +26,8 @@ class VideoEngagement extends StatelessWidget {
     @required this.onOpenComments,
     @required this.onSaveToPlaylist,
     @required this.video,
+    @required this.isAudioPlayer,
+    @required this.onPlayerTypeTap,
   });
 
   @override
@@ -32,24 +36,14 @@ class VideoEngagement extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        // Likes Counter
         _engagementTile(
-          icon: Icon(MdiIcons.thumbUpOutline,
-              color: Theme.of(context).iconTheme.color),
-          text: Text(
-            NumberFormat.compact().format(likeCount),
-            style: TextStyle(fontFamily: "Varela", fontSize: 10),
-          ),
-        ),
-        // Dislikes Counter
-        _engagementTile(
-          icon: Icon(MdiIcons.thumbDownOutline,
-              color: Theme.of(context).iconTheme.color),
-          text: Text(
-            NumberFormat.compact().format(dislikeCount),
-            style: TextStyle(fontFamily: "Varela", fontSize: 10),
-          ),
-        ),
+            icon: Icon(MdiIcons.thumbUpOutline,
+                color: Theme.of(context).iconTheme.color),
+            text: Text(
+              NumberFormat.compact().format(likeCount),
+              style: TextStyle(fontFamily: "Varela", fontSize: 10),
+            ),
+            onPressed: onOpenComments),
         // Open Comments Button
         _engagementTile(
             icon: Icon(MdiIcons.messageTextOutline,
@@ -69,46 +63,61 @@ class VideoEngagement extends StatelessWidget {
               style: TextStyle(fontFamily: "Varela", fontSize: 10),
             ),
             onPressed: onSaveToPlaylist),
+        isAudioPlayer
+            ? _engagementTile(
+                icon: Icon(Icons.tv, color: Theme.of(context).iconTheme.color),
+                text: Text(
+                  "Play video",
+                  style: TextStyle(fontFamily: "Varela", fontSize: 10),
+                ),
+                onPressed: onPlayerTypeTap)
+            : _engagementTile(
+                icon: Icon(Icons.music_note, color: Theme.of(context).iconTheme.color),
+                text: Text(
+                  "Play audio",
+                  style: TextStyle(fontFamily: "Varela", fontSize: 10),
+                ),
+                onPressed: onPlayerTypeTap),
         //Download
-        if(Lib.DOWNLOADING_ENABLED)
-        Container(
-          child: GestureDetector(
-            child: _engagementTile(
-              icon: Icon(EvaIcons.cloudDownloadOutline,
-                  color: Theme.of(context).iconTheme.color),
-              text: Text(
-                "Download",
-                style: TextStyle(fontFamily: "Varela", fontSize: 10),
+        if (Lib.DOWNLOADING_ENABLED)
+          Container(
+            child: GestureDetector(
+              child: _engagementTile(
+                icon: Icon(EvaIcons.cloudDownloadOutline,
+                    color: Theme.of(context).iconTheme.color),
+                text: Text(
+                  "Download",
+                  style: TextStyle(fontFamily: "Varela", fontSize: 10),
+                ),
               ),
+              onTap: () {
+                showModalBottomSheet<dynamic>(
+                    isScrollControlled: true,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          topRight: Radius.circular(30)),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    context: context,
+                    builder: (context) {
+                      String url = video.url;
+                      return Wrap(
+                        children: [
+                          Consumer<ManagerProvider>(
+                              builder: (context, provider, _) {
+                            return DownloadMenu(
+                              videoUrl: url,
+                              scaffoldState:
+                                  provider.internalScaffoldKey.currentState,
+                            );
+                          }),
+                        ],
+                      );
+                    });
+              },
             ),
-            onTap: () {
-              showModalBottomSheet<dynamic>(
-                  isScrollControlled: true,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30)),
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  context: context,
-                  builder: (context) {
-                    String url = video.url;
-                    return Wrap(
-                      children: [
-                        Consumer<ManagerProvider>(
-                            builder: (context, provider, _) {
-                          return DownloadMenu(
-                            videoUrl: url,
-                            scaffoldState:
-                                provider.internalScaffoldKey.currentState,
-                          );
-                        }),
-                      ],
-                    );
-                  });
-            },
           ),
-        ),
       ],
     );
   }

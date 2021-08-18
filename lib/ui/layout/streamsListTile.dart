@@ -113,9 +113,7 @@ class StreamsListTileView extends StatelessWidget {
                               Container(
                                 padding: EdgeInsets.only(left: 8),
                                 child: Text(
-                                  video.uploaderName + " • " +
-                                  "${NumberFormat.compact().format(video.viewCount)}" +
-                                  " Views",
+                                  video.uploaderName  + (video.viewCount != -1 ? (" • " + "${NumberFormat.compact().format(video.viewCount)}" + " views") : "" ),
                                   style: TextStyle(
                                     fontSize: 11,
                                     color: Theme.of(context).textTheme

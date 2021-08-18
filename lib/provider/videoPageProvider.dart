@@ -10,6 +10,7 @@ import 'package:newpipeextractor_dart/models/playlist.dart';
 import 'package:newpipeextractor_dart/models/video.dart';
 import 'package:newpipeextractor_dart/utils/url.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:songtube/audioStreamYt.dart';
 import 'package:songtube/internal/models/playlist.dart';
 import 'package:songtube/internal/models/tagsControllers.dart';
 import 'package:songtube/players/components/youtubePlayer/videoPlayer.dart';
@@ -134,6 +135,8 @@ class VideoPageProvider extends ChangeNotifier {
     notifyListeners();
     _infoItem.getVideo.then((value) { 
       currentVideo = value;
+      AudioStreamPlayer.setUrlStream(value);
+      AudioStreamPlayer.play();
       // TODO: Save Playlist to History
       notifyListeners();
     });

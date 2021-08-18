@@ -269,7 +269,7 @@ class PreferencesProvider extends ChangeNotifier {
 
   //Set home page shown tab
   int get homeTab{
-    return prefs.getInt('homeTab') ?? 0;
+    return prefs.getInt('homeTab') ?? 1;
   }
   set homeTab(int value){
     prefs.setInt('homeTab',value);
@@ -384,7 +384,7 @@ class PreferencesProvider extends ChangeNotifier {
 
   //Hide NavigationBar on scroll
   bool get hideNavigationBar{
-    return prefs.getBool('hideNavigationBar') ?? true;
+    return prefs.getBool('hideNavigationBar') ?? false;
   }
   set hideNavigationBar(bool value){
     prefs.setBool('hideNavigationBar', value);
