@@ -1,7 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:apk_installer/apk_installer.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:dio/dio.dart';
 import 'package:ext_storage/ext_storage.dart';
@@ -179,10 +178,6 @@ class _AppUpdateDownloadSheetState extends State<AppUpdateDownloadSheet> {
           dio.close();
           return;
         }
-        // Begin installation
-        ApkInstaller.installApk(downloadFile.path).then((value) {
-          Navigator.pop(context);
-        });
         dio.close();
       }).catchError((_) {
         dio.close();

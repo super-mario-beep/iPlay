@@ -8,15 +8,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.2"
-  apk_installer:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: main
-      resolved-ref: "3f289e07d39c6638e2ad4a5a251b6258b82b9d32"
-      url: "https://github.com/SongTube/apk_installer"
-    source: git
-    version: "0.0.1"
   args:
     dependency: transitive
     description:
